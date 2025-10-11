@@ -1,0 +1,11 @@
+[install]
+linkWorkspacePackages = true
+frozen = false
+
+[install.cache]
+dir = ".bun-cache"
+
+[test]
+preload = ["./test/setup.ts"]
+include = ["test/vitest-shim.test.ts"]
+exclude = ["packages/**/*.test.ts", "apps/**/*.test.ts", "services/**/*.test.ts"]

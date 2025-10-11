@@ -1,0 +1,31 @@
+{
+  "name": "@ui-designer/shared-types",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --build --watch",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "test": "vitest run --config ./vitest.config.ts",
+    "test:watch": "vitest --config ./vitest.config.ts",
+    "test:coverage": "vitest run --coverage --config ./vitest.config.ts"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.90.2",
+    "rimraf": "6.0.1",
+    "typescript": "5.9.3"
+  }
+}

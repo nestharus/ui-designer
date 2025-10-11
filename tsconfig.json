@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.base.json",
+  // Vitest configs are included here to ensure they're type-checked as part of the
+  // project solution. This provides IDE support (especially IntelliJ IDEA) and catches
+  // config errors early. The configs use import.meta which requires "module": "esnext"
+  // from tsconfig.base.json. Test execution uses tsconfig.vitest.json separately.
+  // See docs/typescript-vitest-config.md for details.
+  "files": [
+    "vitest.config.ts",
+    "packages/shared-types/vitest.config.ts",
+    "apps/web/vitest.config.ts"
+  ],
+  "references": [
+    {
+      "path": "./packages/shared-types"
+    },
+    {
+      "path": "./apps/web"
+    }
+  ],
+  "exclude": ["**/dist", "**/.next", "**/.turbo"]
+}

@@ -26,13 +26,13 @@ The DCP is a Multi-Agent System (MAS) centered around a "Living Specification" m
 
 The architecture is grounded in the provided research papers (accessible via the project knowledge base):
 
-- **HCI Theory:** *UI/UX Theory and Modern Practices* (Paper 1) provides the basis for the HCI Critic agent.
-- **Immersive Design:** *Immersive UI Design* (Paper 2) guides the physics and motion design.
-- **Agent Architecture:** *AI Agent Architecture and Workflows* (Paper 3) defines the MAS, GCC, and Productive Resistance models.
-- **Visualization Tech:** *Dynamic Prototyping Technologies* (Paper 4) dictates the rendering stack selection (SVG/GSAP, PixiJS, Three.js).
-- **Motion Schema:** *Design Token Schema for Motion* (Paper 5) provides the extended DTCG schema for dynamic behaviors.
-- **Thematic Generation:** *AI Thematic Generation* (Paper 6) defines the Genesis Engine pipeline.
-- **Rive Feasibility:** *Programmatic Rive Animation Generation* (Paper 7) defines the constraints and workflow for Rive integration (intermediate generation required).
+- **HCI Theory:** _UI/UX Theory and Modern Practices_ (Paper 1) provides the basis for the HCI Critic agent.
+- **Immersive Design:** _Immersive UI Design_ (Paper 2) guides the physics and motion design.
+- **Agent Architecture:** _AI Agent Architecture and Workflows_ (Paper 3) defines the MAS, GCC, and Productive Resistance models.
+- **Visualization Tech:** _Dynamic Prototyping Technologies_ (Paper 4) dictates the rendering stack selection (SVG/GSAP, PixiJS, Three.js).
+- **Motion Schema:** _Design Token Schema for Motion_ (Paper 5) provides the extended DTCG schema for dynamic behaviors.
+- **Thematic Generation:** _AI Thematic Generation_ (Paper 6) defines the Genesis Engine pipeline.
+- **Rive Feasibility:** _Programmatic Rive Animation Generation_ (Paper 7) defines the constraints and workflow for Rive integration (intermediate generation required).
 
 ### 2. Project Requirements Document (PRD)
 
@@ -71,11 +71,11 @@ The architecture is grounded in the provided research papers (accessible via the
 **F5. Dynamic Prototyping and Visualization**
 
 - **F5.1 Technology Selection Framework:** The Prototyper agent must select the appropriate visualization technology:
-    - SVG+GSAP for standard DOM interactions.
-    - PixiJS + Matter.js for complex 2D physics.
-    - Three.js + Cannon.js/Ammo.js for 3D environments.
+  - SVG+GSAP for standard DOM interactions.
+  - PixiJS + Matter.js for complex 2D physics.
+  - Three.js + Cannon.js/Ammo.js for 3D environments.
 - **F5.2 Token-Driven Rendering:** Prototypes must be generated directly from the Design Tokens.
-- **F5.3 Rive Intermediate Generation:** Implement generation of intermediate formats (SVG/Lottie JSON) for Rive integration. *Note: Direct .riv generation is impossible; a human-in-the-loop step using the Rive Editor is required for final compilation and state machine creation.*
+- **F5.3 Rive Intermediate Generation:** Implement generation of intermediate formats (SVG/Lottie JSON) for Rive integration. _Note: Direct .riv generation is impossible; a human-in-the-loop step using the Rive Editor is required for final compilation and state machine creation._
 
 ### 3. Technical Design and Architecture
 
@@ -86,8 +86,8 @@ A hybrid MAS orchestrated via LangGraph, centered on the GCC-managed Git reposit
 Code snippet
 
 `graph TD
-    UserInterface[User Interface] --> API(DCP API)
-    API --> Orchestrator(Orchestration Layer: LangGraph)
+UserInterface[User Interface] --> API(DCP API)
+API --> Orchestrator(Orchestration Layer: LangGraph)
 
     subgraph MAS [Multi-Agent System]
         Orchestrator --> Strategist
@@ -118,10 +118,10 @@ Code snippet
 - **Persistence:** Git, managed via GCC service (Python/GitPython).
 - **Data Formats:** YAML/JSON (Design Tokens), Markdown.
 - **Prototyping (Generated Output):**
-    - Core: JavaScript, HTML, SVG, Lottie JSON.
-    - Animation: GSAP.
-    - Rendering Engines: PixiJS, Three.js.
-    - Physics Engines: Matter.js, cannon-es.
+  - Core: JavaScript, HTML, SVG, Lottie JSON.
+  - Animation: GSAP.
+  - Rendering Engines: PixiJS, Three.js.
+  - Physics Engines: Matter.js, cannon-es.
 
 ### 3.3. Data Model: The Living Specification (GCC Structure)
 
@@ -151,20 +151,20 @@ Objective: Establish core infrastructure for context persistence and strategic c
 Duration: 4 Weeks
 
 - **EPIC 1.1: MAS Infrastructure Setup**
-    - Task 1.1.1: Set up the Python environment and install LangGraph.
-    - Task 1.1.2: Define the base Agent class and communication protocols.
-    - Task 1.1.3: Implement the LangGraph orchestration layer (basic state machine for agent turn-taking).
+  - Task 1.1.1: Set up the Python environment and install LangGraph.
+  - Task 1.1.2: Define the base Agent class and communication protocols.
+  - Task 1.1.3: Implement the LangGraph orchestration layer (basic state machine for agent turn-taking).
 - **EPIC 1.2: GCC Implementation (The Living Specification)**
-    - (Reference Paper 3, Section 2.3 for GCC details)
-    - Task 1.2.1: Implement the Git Context Controller (GCC) service using GitPython for repository management.
-    - Task 1.2.2: Define the core repository structure (`/Specification/`, `/Prototypes/`, `.GCC/`).
-    - Task 1.2.3: Implement the core GCC commands (COMMIT, BRANCH, MERGE, CONTEXT) as services accessible by agents.
-    - Task 1.2.4: Implement the `.GCC/` structure for storing agent reasoning traces (logs, commit summaries).
+  - (Reference Paper 3, Section 2.3 for GCC details)
+  - Task 1.2.1: Implement the Git Context Controller (GCC) service using GitPython for repository management.
+  - Task 1.2.2: Define the core repository structure (`/Specification/`, `/Prototypes/`, `.GCC/`).
+  - Task 1.2.3: Implement the core GCC commands (COMMIT, BRANCH, MERGE, CONTEXT) as services accessible by agents.
+  - Task 1.2.4: Implement the `.GCC/` structure for storing agent reasoning traces (logs, commit summaries).
 - **EPIC 1.3: The Strategist Agent (V1)**
-    - Task 1.3.1: Develop the Strategist Agent persona.
-    - Task 1.3.2: Integrate the Strategist with the GCC service for persistent memory management.
-    - Task 1.3.3: Implement basic project initialization (creating the repo, defining `Principles.md`).
-    - Task 1.3.4: Implement dynamic roadmap generation (analyzing the state of the `/Specification/` directory).
+  - Task 1.3.1: Develop the Strategist Agent persona.
+  - Task 1.3.2: Integrate the Strategist with the GCC service for persistent memory management.
+  - Task 1.3.3: Implement basic project initialization (creating the repo, defining `Principles.md`).
+  - Task 1.3.4: Implement dynamic roadmap generation (analyzing the state of the `/Specification/` directory).
 
 ### Phase 2: The Critics (Productive Resistance)
 
@@ -173,21 +173,21 @@ Objective: Implement the critical feedback loop and theory-driven analysis.
 Duration: 5 Weeks
 
 - **EPIC 2.1: Knowledge Base Integration (RAG)**
-    - Task 2.1.1: Set up a Vector Database (e.g., Chroma, Pinecone).
-    - Task 2.1.2: Ingest and index the foundational research papers (HCI Theory, Immersive Design, etc.).
-    - Task 2.1.3: Implement a RAG pipeline service accessible by all agents for theory retrieval.
+  - Task 2.1.1: Set up a Vector Database (e.g., Chroma, Pinecone).
+  - Task 2.1.2: Ingest and index the foundational research papers (HCI Theory, Immersive Design, etc.).
+  - Task 2.1.3: Implement a RAG pipeline service accessible by all agents for theory retrieval.
 - **EPIC 2.2: The HCI Critic Agent (V1)**
-    - (Reference Paper 1 for HCI Principles)
-    - Task 2.2.1: Implement the HCI Critic persona, emphasizing productive resistance (Paper 3, Section 1).
-    - Task 2.2.2: Integrate the HCI Critic with the RAG pipeline for grounded critique.
-    - Task 2.2.3: Develop standardized critique frameworks (e.g., Cognitive Load analysis, Fitts's/Hick's Law evaluation, Accessibility checks).
+  - (Reference Paper 1 for HCI Principles)
+  - Task 2.2.1: Implement the HCI Critic persona, emphasizing productive resistance (Paper 3, Section 1).
+  - Task 2.2.2: Integrate the HCI Critic with the RAG pipeline for grounded critique.
+  - Task 2.2.3: Develop standardized critique frameworks (e.g., Cognitive Load analysis, Fitts's/Hick's Law evaluation, Accessibility checks).
 - **EPIC 2.3: The Dialectical Loop**
-    - Task 2.3.1: Implement the "Validation, Pushback, Refinement" interaction flow within the LangGraph orchestration.
-    - Task 2.3.2: Configure the Strategist to invoke the Critic when the user proposes a new concept.
-    - Task 2.3.3: Implement the feedback presentation mechanism to the user, linking critiques back to theory and goals.
+  - Task 2.3.1: Implement the "Validation, Pushback, Refinement" interaction flow within the LangGraph orchestration.
+  - Task 2.3.2: Configure the Strategist to invoke the Critic when the user proposes a new concept.
+  - Task 2.3.3: Implement the feedback presentation mechanism to the user, linking critiques back to theory and goals.
 - **EPIC 2.4: Bottom-Up Synthesis and Impact Analysis**
-    - Task 2.4.1: Enhance the Strategist to track dependencies between components (Atomic Design principles).
-    - Task 2.4.2: Implement the impact analysis feature: tracing how a component change affects the broader UX architecture.
+  - Task 2.4.1: Enhance the Strategist to track dependencies between components (Atomic Design principles).
+  - Task 2.4.2: Implement the impact analysis feature: tracing how a component change affects the broader UX architecture.
 
 ### Phase 3: The Visualizers (Dynamic Prototyping)
 
@@ -196,30 +196,30 @@ Objective: Implement the visualization stack, motion design capabilities, and ph
 Duration: 8 Weeks
 
 - **EPIC 3.1: Extended Motion Token Schema**
-    - (Reference Paper 5 for detailed schema definitions)
-    - Task 3.1.1: Implement the data structure for the extended W3C DTCG schema (`motion.spring`, `motion.curve`, `motion.noise`) in the Living Specification.
-    - Task 3.1.2: Develop the Style Dictionary transformation logic for web platforms (CSS Custom Properties and WAAPI/JS targets).
-    - Task 3.1.3: Implement spring approximation algorithms for CSS fallbacks (Paper 5, Section 5.2).
+  - (Reference Paper 5 for detailed schema definitions)
+  - Task 3.1.1: Implement the data structure for the extended W3C DTCG schema (`motion.spring`, `motion.curve`, `motion.noise`) in the Living Specification.
+  - Task 3.1.2: Develop the Style Dictionary transformation logic for web platforms (CSS Custom Properties and WAAPI/JS targets).
+  - Task 3.1.3: Implement spring approximation algorithms for CSS fallbacks (Paper 5, Section 5.2).
 - **EPIC 3.2: The Interaction Designer Agent (V1)**
-    - (Reference Paper 2 for Functional Immersion principles)
-    - Task 3.2.1: Implement the Interaction Designer persona.
-    - Task 3.2.2: Develop capabilities for defining motion tokens based on thematic goals (e.g., translating "bouncy" into a specific `motion.spring` token).
+  - (Reference Paper 2 for Functional Immersion principles)
+  - Task 3.2.1: Implement the Interaction Designer persona.
+  - Task 3.2.2: Develop capabilities for defining motion tokens based on thematic goals (e.g., translating "bouncy" into a specific `motion.spring` token).
 - **EPIC 3.3: Prototyper Agent (V1) - DOM Stack (SVG+GSAP)**
-    - (Reference Paper 4, Section 2)
-    - Task 3.3.1: Develop the Prototyper Agent persona and the Visualization Sandbox environment.
-    - Task 3.3.2: Implement the generation pipeline for SVG + GSAP prototypes, driven by design tokens.
+  - (Reference Paper 4, Section 2)
+  - Task 3.3.1: Develop the Prototyper Agent persona and the Visualization Sandbox environment.
+  - Task 3.3.2: Implement the generation pipeline for SVG + GSAP prototypes, driven by design tokens.
 - **EPIC 3.4: Prototyper Agent (V2) - WebGL Stack and Physics**
-    - (Reference Paper 4, Section 4)
-    - Task 3.4.1: Implement the Technology Selection Framework (logic for choosing DOM vs. WebGL).
-    - Task 3.4.2: Implement the 2D pipeline: PixiJS (rendering) + Matter.js (physics engine).
-    - Task 3.4.3: Implement the 3D pipeline: Three.js (rendering) + cannon-es (physics engine).
-    - Task 3.4.4: Implement the synchronization loop (requestAnimationFrame) connecting physics state to rendering updates.
+  - (Reference Paper 4, Section 4)
+  - Task 3.4.1: Implement the Technology Selection Framework (logic for choosing DOM vs. WebGL).
+  - Task 3.4.2: Implement the 2D pipeline: PixiJS (rendering) + Matter.js (physics engine).
+  - Task 3.4.3: Implement the 3D pipeline: Three.js (rendering) + cannon-es (physics engine).
+  - Task 3.4.4: Implement the synchronization loop (requestAnimationFrame) connecting physics state to rendering updates.
 - **EPIC 3.5: Rive Intermediate Generation Workflow**
-    - *Context: Direct .riv generation is impossible (See Paper 7).*
-    - Task 3.5.1: Define the "Rive-Compatible" SVG subset specification (Section 4.2 of the Rive paper).
-    - Task 3.5.2: Implement the Prototyper capability to generate SVG files adhering to the compatible subset.
-    - Task 3.5.3: Implement the Prototyper capability to generate Lottie JSON for timeline animations.
-    - Task 3.5.4: Define the user workflow for the required human-in-the-loop step (importing generated assets into the Rive Editor).
+  - _Context: Direct .riv generation is impossible (See Paper 7)._
+  - Task 3.5.1: Define the "Rive-Compatible" SVG subset specification (Section 4.2 of the Rive paper).
+  - Task 3.5.2: Implement the Prototyper capability to generate SVG files adhering to the compatible subset.
+  - Task 3.5.3: Implement the Prototyper capability to generate Lottie JSON for timeline animations.
+  - Task 3.5.4: Define the user workflow for the required human-in-the-loop step (importing generated assets into the Rive Editor).
 
 ### Phase 4: The Creators (Thematic Generation - Genesis Engine)
 
@@ -228,14 +228,14 @@ Objective: Implement the AI-driven thematic design pipeline.
 Duration: 6 Weeks
 
 - **EPIC 4.1: Thematician Agent (V1) - Conceptualization**
-    - (Reference Paper 6, Section 2)
-    - Task 4.1.1: Develop the Thematician agent prompts, focusing on narrative, mood, and motif generation.
-    - Task 4.1.2: Implement structured frameworks (e.g., TIAC) for guiding the LLM from abstract concepts to concrete themes.
+  - (Reference Paper 6, Section 2)
+  - Task 4.1.1: Develop the Thematician agent prompts, focusing on narrative, mood, and motif generation.
+  - Task 4.1.2: Implement structured frameworks (e.g., TIAC) for guiding the LLM from abstract concepts to concrete themes.
 - **EPIC 4.2: Visual Mood Boarding**
-    - Task 4.2.1: Integrate a Diffusion model (e.g., Stable Diffusion API).
-    - Task 4.2.2: Implement the pipeline for the Thematician to generate rich visual prompts for the Diffusion model.
+  - Task 4.2.1: Integrate a Diffusion model (e.g., Stable Diffusion API).
+  - Task 4.2.2: Implement the pipeline for the Thematician to generate rich visual prompts for the Diffusion model.
 - **EPIC 4.3: Automated Token and Asset Generation**
-    - (Reference Paper 6, Section 3)
-    - Task 4.3.1: Implement AI-powered color palette and typography extraction from the mood board.
-    - Task 4.3.2: Implement automated generation and semantic naming of design tokens (color, type, spacing).
-    - Task 4.3.3: Integrate AI icon generation tools (e.g., Recraft API) to produce stylistically coherent icon sets based on the generated theme.
+  - (Reference Paper 6, Section 3)
+  - Task 4.3.1: Implement AI-powered color palette and typography extraction from the mood board.
+  - Task 4.3.2: Implement automated generation and semantic naming of design tokens (color, type, spacing).
+  - Task 4.3.3: Integrate AI icon generation tools (e.g., Recraft API) to produce stylistically coherent icon sets based on the generated theme.
