@@ -1,0 +1,12 @@
+dist/
+build/
+.next/
+node_modules/
+*.log
+.tsbuildinfo
+coverage/
+.vercel/
+.bun-cache/
+.idea/
+.scannerwork/
+.vscode/

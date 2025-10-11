@@ -1,0 +1,65 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "preserve",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "customConditions": [],
+    // Relaxed to ease DTO typing and compatibility with third-party libs that use optional properties loosely.
+    // Risk: allows undefined assignment to optional properties that don't explicitly include undefined in their type.
+    // See: https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes
+    "exactOptionalPropertyTypes": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"],
+      "@ui-designer/query": ["../../packages/query/src"],
+      "@ui-designer/shared-types": ["../../packages/shared-types/src"],
+      "@tanstack/react-query-devtools": ["./types/shims/tanstack-react-query-devtools"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "types/**/*.d.ts",
+    "features/**/*.ts",
+    "features/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "hooks/**/*.ts",
+    "hooks/**/*.tsx",
+    "store/**/*.ts",
+    "store/**/*.tsx",
+    "server/**/*.ts",
+    "server/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".next",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/__tests__",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ],
+  "references": [
+    {
+      "path": "../../packages/shared-types"
+    },
+    {
+      "path": "../../packages/query"
+    }
+  ]
+}

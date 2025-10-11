@@ -1,0 +1,41 @@
+# Lefthook configuration for Git hooks
+# Install: bun add -d lefthook && bunx lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    lint-staged:
+      glob: '**/*.{ts,tsx,js,jsx,json,md}'
+      run: bunx lint-staged
+    type-check:
+      glob: '**/*.{ts,tsx}'
+      run: bun run type-check
+
+# Pre-push hooks run comprehensive checks before pushing to remote
+#
+# ⚠️ IMPORTANT: Do NOT add --filter or --affected flags here!
+#
+# Why? Turborepo automatically handles incremental execution through its caching:
+# - Tracks file changes since last successful run
+# - Uses dependency graph to determine what needs rebuilding
+# - Caches task outputs for instant results when nothing changed
+# - Works consistently across local dev, CI, and team members
+#
+# Adding --filter would bypass Turbo's smart caching and force specific packages
+# to run even when they haven't changed. Let Turbo do its job!
+#
+# See docs/development-workflow.md for more on Turbo caching.
+pre-push:
+  parallel: false
+  commands:
+    lint:
+      run: bun run lint
+    type-check:
+      run: bun run type-check
+    build:
+      run: bun run build
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bunx commitlint --edit {1}

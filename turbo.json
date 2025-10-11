@@ -1,0 +1,61 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "globalEnv": ["NODE_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**"],
+      "env": ["NODE_ENV"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": [".eslintcache"]
+    },
+    "lint:fix": {
+      "outputs": [".eslintcache"]
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": ["**/*.tsbuildinfo"]
+    },
+    "test": {
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "test:unit": {
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "test:integration": {
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "test:all": {
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "test:coverage:unit": {
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "test:coverage:integration": {
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "test:coverage:all": {
+      "cache": true,
+      "outputs": ["coverage/**"]
+    },
+    "test:e2e": {
+      "cache": false,
+      "dependsOn": ["build"]
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}
