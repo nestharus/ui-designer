@@ -10,9 +10,10 @@ test.describe('Home Page', () => {
   test('should display Font Awesome icons', async ({ page }) => {
     await page.goto('/');
 
-    // Check that SVG icons are rendered
-    const icons = page.locator('svg[data-icon]');
-    await expect(icons).toHaveCount(3); // rocket, coffee, github
+    // Check that specific SVG icons are rendered
+    await expect(page.locator('svg[data-icon="rocket"]')).toBeVisible();
+    await expect(page.locator('svg[data-icon="coffee"]')).toBeVisible();
+    await expect(page.locator('svg[data-icon="github"]')).toBeVisible();
   });
 
   test('should have proper meta tags', async ({ page }) => {

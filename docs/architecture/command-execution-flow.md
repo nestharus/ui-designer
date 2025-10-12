@@ -6,7 +6,7 @@ This document explains the execution flow when you run workspace-filtered comman
 
 ## Execution Flow Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │ Developer runs:                                                 │
 │ $ bun run dev --filter @ui-designer/shared-types                │
@@ -63,7 +63,7 @@ This means:
 
 ### 2. Separation of Concerns
 
-```
+```text
 ┌──────────────┐         ┌──────────────┐
 │     Bun      │         │    Turbo     │
 │              │         │              │
@@ -100,7 +100,7 @@ turbo run dev --filter=@ui-designer/shared-types
 
 **Error:**
 
-```
+```text
 turbo: command not found
 ```
 
@@ -131,7 +131,7 @@ bunx turbo run dev --filter=@ui-designer/shared-types
 
 **Execution flow:**
 
-```
+```text
 bunx → Finds local turbo → Runs with Turbo's --filter= syntax
 ```
 
@@ -150,6 +150,9 @@ bunx → Finds local turbo → Runs with Turbo's --filter= syntax
 $ bun run build --filter @ui-designer/shared-types
 
 # Expected output:
+```
+
+```text
 • Packages in scope: @ui-designer/shared-types
 • Running build in 1 packages
 ```
@@ -160,6 +163,9 @@ $ bun run build --filter @ui-designer/shared-types
 $ turbo --version
 
 # Expected output:
+```
+
+```text
 turbo: command not found
 ```
 
@@ -169,6 +175,9 @@ turbo: command not found
 $ bunx turbo --version
 
 # Expected output:
+```
+
+```text
 2.5.8 (or current version)
 ```
 

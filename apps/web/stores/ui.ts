@@ -13,12 +13,38 @@ interface UIState {
   toggleSidebar: () => void;
 }
 
+function getStorage(): Storage | null {
+  const g: unknown = globalThis;
+  if (typeof g === 'object' && g !== null && 'localStorage' in g) {
+    return (g as { localStorage: Storage }).localStorage;
+  }
+  return null;
+}
+
+function readSidebarOpen(): boolean {
+  const storage = getStorage();
+  const raw = storage?.getItem('sidebarOpen');
+  if (raw === 'true') return true;
+  if (raw === 'false') return false;
+  return true;
+}
+
+function writeSidebarOpen(value: boolean): void {
+  const storage = getStorage();
+  storage?.setItem('sidebarOpen', value ? 'true' : 'false');
+}
+
 export const useUIStore = create<UIState>((set) => ({
-  sidebarOpen: true,
+  sidebarOpen: readSidebarOpen(),
   setSidebarOpen: (open) => {
     set({ sidebarOpen: open });
+    writeSidebarOpen(open);
   },
   toggleSidebar: () => {
-    set((state) => ({ sidebarOpen: !state.sidebarOpen }));
+    set((state) => {
+      const next = !state.sidebarOpen;
+      writeSidebarOpen(next);
+      return { sidebarOpen: next };
+    });
   },
 }));

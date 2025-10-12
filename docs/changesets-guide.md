@@ -180,8 +180,6 @@ import { UserProfile } from '@ui-designer/shared-types';
 ```
 ````
 
-````
-
 ### 4. Group Related Changes
 
 If multiple packages change together, include them in one changeset:
@@ -195,7 +193,7 @@ If multiple packages change together, include them in one changeset:
 Add project management features
 
 Adds new Project type and CRUD operations.
-````
+```
 
 ### 5. Selecting Dependency Versions (Version Drift)
 

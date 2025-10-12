@@ -10,6 +10,126 @@ This project uses [Vitest](https://vitest.dev/) as the testing framework. All te
 
 ## Writing Tests
 
+### AAA + Traversal Rules
+
+Adopt Arrange–Act–Assert with soft assertions and extracted traversals/conditions:
+
+- Arrange, Act, Assert in order; keep bodies linear and readable.
+- Extract traversal and conditions into helpers (generators or pure functions).
+- Use soft assertions for multiple checks; keep all assertions in the test body.
+- Avoid if-statements in the test body; encode branching inside the traversal helpers.
+- Use loops in the test only to iterate over traversal outputs (no ad‑hoc iteration over raw structures).
+- Prefer parameterized tests (`describe.each` / `it.each`) to cover scenarios.
+- Group initialization/related tests with nested `describe` blocks; use `beforeAll/afterAll` or `beforeEach/afterEach` inside those blocks.
+
+Example — traversal + soft assertions (JS/TS‑idiomatic):
+
+```ts
+import { describe, it, expect } from 'vitest';
+
+function numberGeneratorTestCases(): Array<readonly [number, number, number, number]> {
+  return [
+    [1, 5, 0, 10],
+    [5, 5, 0, 10],
+    [3, 1, 0, 10],
+    [3, 5, 0, 10],
+    [3, 1, 0, 0],
+    [3, 5, 5, 10],
+  ] as const;
+}
+
+type ResultArray = { arrayIndex: number; array: number[] };
+type ResultValue = { arrayIndex: number; valueIndex: number; value: number };
+
+function* arrayStream(resultArrays: number[][]): Generator<ResultArray> {
+  for (let arrayIndex = 0; arrayIndex < resultArrays.length; arrayIndex++) {
+    yield { arrayIndex, array: resultArrays[arrayIndex] };
+  }
+}
+
+function* valueStream(resultArrays: number[][]): Generator<ResultValue> {
+  for (let arrayIndex = 0; arrayIndex < resultArrays.length; arrayIndex++) {
+    const arr = resultArrays[arrayIndex];
+    for (let valueIndex = 0; valueIndex < arr.length; valueIndex++) {
+      yield { arrayIndex, valueIndex, value: arr[valueIndex] };
+    }
+  }
+}
+
+describe('NumberGeneratorService', () => {
+  it.each(numberGeneratorTestCases())(
+    'count=%s, size=%s, min=%s, max=%s',
+    (count, size, rangeMin, rangeMax) => {
+      // Arrange
+      const service = new NumberGeneratorService({ count, size, min: rangeMin, max: rangeMax });
+
+      // Act
+      const result = service.generateArrays();
+
+      // Assert (soft assertions kept in test)
+      expect.soft(result).toHaveLength(count);
+
+      for (const { arrayIndex, array } of arrayStream(result)) {
+        expect.soft(array, `array[${arrayIndex}] length`).toHaveLength(size);
+      }
+
+      for (const { arrayIndex, valueIndex, value } of valueStream(result)) {
+        expect
+          .soft(value, `min violation at [${arrayIndex}][${valueIndex}]`)
+          .toBeGreaterThanOrEqual(rangeMin);
+        expect
+          .soft(value, `max violation at [${arrayIndex}][${valueIndex}]`)
+          .toBeLessThanOrEqual(rangeMax);
+      }
+
+      for (const { arrayIndex, array } of arrayStream(result)) {
+        const distinct = new Set(array).size;
+        expect.soft(distinct, `dupes at array[${arrayIndex}]`).toBe(array.length);
+      }
+    },
+  );
+});
+```
+
+Notes:
+
+- Assertions remain in the test; the helpers only provide traversal/structure.
+- Soft assertions surface all violations in one run without short‑circuiting on first failure.
+  Vitest automatically aggregates and reports all `expect.soft` failures at the end of each test — no explicit assertAll or runner is needed.
+  Use `it.each` when each tuple produces a single test; use `describe.each` when multiple tests share the same parameters and you need several `it` blocks.
+  Prefer generator functions (`function*`) for traversals over materializing arrays to avoid large intermediate collections and to express intent more clearly (similar to Java Streams).
+
+Nested blocks for initialization and related tests:
+
+```ts
+import { describe, beforeAll, afterAll, it, expect } from 'vitest';
+
+describe('Database', () => {
+  let client: { connect: () => Promise<void>; close: () => Promise<void> };
+
+  beforeAll(async () => {
+    client = /* create client */ {
+      connect: async () => {},
+      close: async () => {},
+    };
+    await client.connect();
+  });
+
+  afterAll(async () => {
+    await client.close();
+  });
+
+  describe('UserRepository', () => {
+    it('creates and fetches a user (single assertion)', async () => {
+      const issues: string[] = [];
+      // Arrange/Act via helpers...
+      // push to issues for any violations
+      expect(issues).toEqual([]);
+    });
+  });
+});
+```
+
 ### Test Structure
 
 Follow the **Arrange-Act-Assert** (AAA) pattern:

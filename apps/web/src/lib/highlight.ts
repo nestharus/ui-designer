@@ -1,19 +1,16 @@
 import { createHighlighter, type BundledLanguage, type BundledTheme } from 'shiki';
 
-let highlighterInstance: Awaited<ReturnType<typeof createHighlighter>> | null = null;
+const highlighters = new Map<string, Awaited<ReturnType<typeof createHighlighter>>>();
 
 export async function highlightCode(
   code: string,
   lang: BundledLanguage = 'typescript',
-  theme: BundledTheme = 'nord'
+  theme: BundledTheme = 'nord',
 ): Promise<string> {
-  highlighterInstance ??= await createHighlighter({
-    themes: [theme],
-    langs: [lang],
-  });
-
-  return highlighterInstance.codeToHtml(code, {
-    lang,
-    theme,
-  });
+  const key = `${theme}:${lang}`;
+  if (!highlighters.has(key)) {
+    const hl = await createHighlighter({ themes: [theme], langs: [lang] });
+    highlighters.set(key, hl);
+  }
+  return highlighters.get(key)!.codeToHtml(code, { lang, theme });
 }

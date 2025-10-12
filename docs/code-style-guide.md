@@ -476,33 +476,6 @@ import * as UI from '@/components/ui';
 
 ## Formatting
 
-### Line Length
-
-- Keep lines under 100 characters
-- Break long lines at logical points
-
-```typescript
-// ✅ Good
-const result = calculateComplexValue(
-  firstParameter,
-  secondParameter,
-  thirdParameter,
-  fourthParameter,
-  fifthParameter,
-  sixthParameter
-);
-
-// ❌ Bad
-const result = calculateComplexValue(
-  firstParameter,
-  secondParameter,
-  thirdParameter,
-  fourthParameter,
-  fifthParameter,
-  sixthParameter
-);
-```
-
 ### Indentation
 
 - Use 2 spaces for indentation
@@ -510,23 +483,27 @@ const result = calculateComplexValue(
 
 ### Trailing Commas
 
-- Use trailing commas in multi-line structures
-- Prettier handles this automatically
+- Prettier now enforces trailing commas everywhere (`trailingComma: "all"`)
+- Applies to objects, arrays, imports/exports, and function parameters
+- Produces cleaner diffs when adding new items or parameters
 
 ```typescript
-// ✅ Good
+// ✅ Good (object)
 const user = {
   id: 1,
   name: 'John',
   email: 'john@example.com',
 };
 
-// ❌ Bad
-const user = {
-  id: 1,
-  name: 'John',
-  email: 'john@example.com',
-};
+// ✅ Good (function parameters)
+function createUser(id: number, name: string, email: string) {
+  /* ... */
+}
+
+// Adding a new parameter only changes one line
+function createUser(id: number, name: string, email: string, isAdmin: boolean) {
+  /* ... */
+}
 ```
 
 ## Automated Enforcement

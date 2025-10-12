@@ -86,8 +86,17 @@ export interface PrototypeAsset extends Entity {
 
 export type PrototypeAssetKind = 'frame' | 'component' | 'storyboard' | 'interaction' | 'document';
 
-export interface PrototypeMetadata {
+type MetadataValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { readonly [key: string]: MetadataValue }
+  | readonly MetadataValue[];
+
+interface PrototypeMetadataBase {
   readonly framework?: string;
   readonly buildVersion?: string;
-  readonly [key: string]: string | number | boolean | undefined | null | Record<string, unknown>;
 }
+
+export type PrototypeMetadata = PrototypeMetadataBase & Readonly<Record<string, MetadataValue>>;

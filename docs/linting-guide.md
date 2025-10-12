@@ -41,7 +41,8 @@ Instead of using XO's full configuration (which can conflict with ESLint 9's fla
   "eslint-plugin-jsx-a11y": "^6.10.2",
   "eslint-plugin-unicorn": "^61.0.2",
   "eslint-plugin-drizzle": "^0.2.3",
-  "eslint-config-prettier": "^10.1.8"
+  "eslint-config-prettier": "^10.1.8",
+  "eslint-plugin-sonarjs": "^2.0.4"
 }
 ```
 
@@ -97,6 +98,16 @@ If using Drizzle ORM:
 
 - ✅ Enforce `WHERE` clause in `DELETE` operations
 - ✅ Enforce `WHERE` clause in `UPDATE` operations
+
+### 6. Code Quality Analysis (SonarJS)
+
+Aligns local linting with SonarQube by detecting code smells and quality issues early:
+
+- ✅ Detects cognitive complexity hotspots
+- ✅ Flags duplicate code blocks
+- ✅ Identifies potential bugs before CI
+- ✅ Mirrors SonarQube rules locally for faster feedback
+- ✅ Encourages maintainable, readable code
 
 ## Running Linting
 
@@ -253,6 +264,20 @@ pre-commit:
     lint:
       run: bun run lint
 ```
+
+## ESLint Performance Optimization
+
+Use a persistent cache to speed up repeated runs locally and in CI. The root `lint` script is configured to write to a dedicated cache file:
+
+```json
+{
+  "scripts": {
+    "lint": "turbo run lint -- --cache-location .eslintcache"
+  }
+}
+```
+
+Ensure `.eslintcache` is ignored by Git (already included in this repo's `.gitignore`).
 
 ## Answering Your Questions
 

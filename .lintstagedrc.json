@@ -1,5 +1,7 @@
 {
-  "*.{ts,tsx,js,jsx}": ["eslint --fix --cache", "prettier --write"],
+  "apps/**/*.{ts,tsx,js,jsx}": ["bunx eslint --fix --cache", "prettier --write"],
+  "packages/**/*.{ts,tsx,js,jsx}": ["bunx eslint --fix --cache", "prettier --write"],
+  "services/**/*.{ts,tsx,js,jsx}": ["bunx eslint --fix --cache", "prettier --write"],
   "*.{json,md,yml,yaml}": ["prettier --write"],
   "*.css": ["stylelint --fix", "prettier --write"]
 }

@@ -14,7 +14,7 @@ This file is intentionally brief. Use it as a signpost to the canonical document
 
 ## Rules of Engagement (Pointers)
 
-- Use Bun 1.3.x and run scripts with `bun run`/`bunx`.
+- Use Bun 1.3.0 and run scripts with `bun run`/`bunx`.
 - Use Vitest for tests (`bun run test`), not Bun's test runner (except for the shim in `test/vitest-shim.test.ts`).
 - Follow the monorepo TypeScript setup and project references.
 - Keep changes scoped and aligned with the existing style and tooling.

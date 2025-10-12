@@ -9,6 +9,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import importPlugin from 'eslint-plugin-import';
 import unicornPlugin from 'eslint-plugin-unicorn';
 import drizzlePlugin from 'eslint-plugin-drizzle';
+import sonarPlugin from 'eslint-plugin-sonarjs';
 
 export default tseslint.config(
   // Base configs
@@ -180,7 +181,7 @@ export default tseslint.config(
     },
     settings: {
       react: {
-        version: '19.2.0',
+        version: 'detect',
       },
     },
   },
@@ -253,6 +254,16 @@ export default tseslint.config(
       'drizzle/enforce-update-with-where': 'error',
     },
   },
+  {
+    // SonarJS rules for code quality and code smells
+    files: ['**/*.{ts,tsx}'],
+    plugins: {
+      sonarjs: sonarPlugin,
+    },
+    rules: {
+      ...sonarPlugin.configs.recommended.rules,
+    },
+  },
   // Prettier config (must be last to override formatting rules)
   ...(Array.isArray(prettierConfig) ? prettierConfig : [prettierConfig]),
   {
@@ -266,6 +277,7 @@ export default tseslint.config(
       '.idea/',
       '.scannerwork/',
       'plans/',
+      'examples/',
       'commitlint.config.js',
       'eslint.config.js',
       '**/postcss.config.*',

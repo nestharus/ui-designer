@@ -140,7 +140,7 @@ Define CSS variables in the `@theme` block:
 Use with Tailwind utilities:
 
 ```typescript
-<h1 className="text-(--color-brand) font-(--font-heading)">
+<h1 className="text-[var(--color-brand)] font-[var(--font-heading)]">
   Heading
 </h1>
 ```

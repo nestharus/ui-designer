@@ -3,36 +3,48 @@ export interface ProjectListParams {
   readonly pageSize?: number;
   readonly search?: string;
 }
-// Shared sentinel to ensure stable default reference for empty params
-const EMPTY_PROJECT_PARAMS: ProjectListParams = Object.freeze({});
+
+type KeyPart = string | number | boolean | null | object;
+
+const t = <const T extends readonly KeyPart[]>(...args: T) => args;
+const append = <const A extends readonly KeyPart[], const B extends readonly KeyPart[]>(
+  a: A,
+  ...b: B
+): readonly [...A, ...B] => [...a, ...b] as readonly [...A, ...B];
 
 const projects = {
-  all: () => ['projects'] as const,
-  lists: () => [...projects.all(), 'lists'] as const,
-  list: (params: ProjectListParams = EMPTY_PROJECT_PARAMS) =>
-    [...projects.lists(), params] as const,
-  details: () => [...projects.all(), 'details'] as const,
-  detail: (id: string) => [...projects.details(), id] as const,
+  all: () => t('projects'),
+  lists: () => append(projects.all(), 'lists'),
+  list: (params?: ProjectListParams) =>
+    (params
+      ? append(projects.lists(), params)
+      : projects.lists()) as typeof params extends ProjectListParams
+      ? readonly ['projects', 'lists', ProjectListParams]
+      : readonly ['projects', 'lists'],
+  details: () => append(projects.all(), 'details'),
+  detail: (id: string) => append(projects.details(), id),
 };
 
 const agents = {
-  all: () => ['agents'] as const,
-  lists: () => [...agents.all(), 'lists'] as const,
-  list: (filters?: Record<string, unknown>) => [...agents.lists(), filters] as const,
-  details: () => [...agents.all(), 'details'] as const,
-  detail: (id: string) => [...agents.details(), id] as const,
+  all: () => t('agents'),
+  lists: () => append(agents.all(), 'lists'),
+  list: (filters?: Record<string, unknown>) =>
+    filters ? append(agents.lists(), filters) : agents.lists(),
+  details: () => append(agents.all(), 'details'),
+  detail: (id: string) => append(agents.details(), id),
 };
 
 const designTokens = {
-  all: () => ['designTokens'] as const,
-  lists: () => [...designTokens.all(), 'lists'] as const,
-  list: (category?: string) => [...designTokens.lists(), category] as const,
-  details: () => [...designTokens.all(), 'details'] as const,
-  detail: (id: string) => [...designTokens.details(), id] as const,
+  all: () => t('designTokens'),
+  lists: () => append(designTokens.all(), 'lists'),
+  list: (category?: string) =>
+    category ? append(designTokens.lists(), category) : designTokens.lists(),
+  details: () => append(designTokens.all(), 'details'),
+  detail: (id: string) => append(designTokens.details(), id),
 };
 
 export const queryKeys = {
   projects,
   agents,
   designTokens,
-} as const;
+};

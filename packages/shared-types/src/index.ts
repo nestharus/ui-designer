@@ -6,3 +6,4 @@ export * from './query-keys';
 
 // Re-export for convenience - apps can use this for their own module augmentation
 export type { AppError } from './query-config';
+export type { Project } from './domain';

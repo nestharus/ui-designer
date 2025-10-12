@@ -98,8 +98,6 @@ This is a known limitation when combining:
 - Use overly broad glob patterns
 - Duplicate exclusions that TypeScript handles automatically
 
-# TypeScript and Vitest Configuration Guide
-
 ## Overview
 
 This project uses a carefully structured TypeScript configuration system designed for a Bun-first monorepo with Vitest testing. Understanding this structure is crucial for adding new packages and avoiding configuration errors.
@@ -123,6 +121,27 @@ The base configuration defines settings shared across all packages:
   }
 }
 ```
+
+#### Path Aliases
+
+Add a `paths` mapping to enable direct source imports during development:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@ui-designer/shared-types": ["./packages/shared-types/src/index.ts"]
+    }
+  }
+}
+```
+
+Notes:
+
+- Allows importing from `@ui-designer/shared-types` without building first
+- Works alongside project references and standard `tsc --build`
+- Speeds up local iteration; production builds still rely on emitted declarations
 
 **Key Points:**
 
@@ -205,6 +224,8 @@ Separate config for ESLint to check all source files:
 ## Package Configuration Pattern
 
 Each package needs TWO TypeScript configs:
+
+Note: With the base `paths` mapping, packages can import from `@ui-designer/shared-types` directly during development (source file resolution) without building first. The standard build process using project references remains the recommended path for production-like validation.
 
 ### 1. Main Config (`packages/[name]/tsconfig.json`)
 

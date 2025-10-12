@@ -23,7 +23,7 @@ describe('common.ts - Nullable', () => {
     const a: Nullable<string> = 'x';
     const b: Nullable<string> = null;
     const c: Nullable<string> = undefined;
-    expect([a, b, c].length).toBe(3);
+    expect.soft([a, b, c]).toHaveLength(3);
     expectTypeOf<Nullable<string>>().toEqualTypeOf<string | null | undefined>();
   });
 
@@ -68,8 +68,8 @@ describe('common.ts - DeepPartial', () => {
       tags: [{ k: 'a' }],
       list: [{}],
     };
-    expect(Array.isArray(d.tags)).toBe(true);
-    expect(Array.isArray(d.list)).toBe(true);
+    expect.soft(Array.isArray(d.tags)).toBe(true);
+    expect.soft(Array.isArray(d.list)).toBe(true);
   });
 
   it('works with complex nested structures', () => {
@@ -82,8 +82,8 @@ describe('common.ts - DeepPartial', () => {
       meta: {},
       children: [{ attrs: {} }],
     };
-    expect(p.meta).toBeDefined();
-    expect(p.children?.[0]?.attrs).toBeDefined();
+    expect.soft(p.meta === undefined).toBe(false);
+    expect.soft(Boolean(p.children?.[0]?.attrs)).toBe(true);
   });
 
   it('recursively partializes Map values and Set elements', () => {
@@ -92,28 +92,33 @@ describe('common.ts - DeepPartial', () => {
       b: { c: string };
     }
     const mp: DeepPartial<Map<string, V>> = new Map([['k', { b: {} }]]);
-    expect(mp).toBeInstanceOf(Map);
 
     type S = Set<{ id: string; meta: { x: number } }>;
     const st: DeepPartial<S> = new Set([{ meta: {} }]);
-    expect(st).toBeInstanceOf(Set);
+    expect.soft(mp instanceof Map).toBe(true);
+    expect.soft(st instanceof Set).toBe(true);
   });
 });
 
 describe('common.ts - HttpStatus constants', () => {
   it('matches expected numeric values', () => {
-    expect(HttpStatus.OK).toBe(200);
-    expect(HttpStatus.CREATED).toBe(201);
-    expect(HttpStatus.ACCEPTED).toBe(202);
-    expect(HttpStatus.NO_CONTENT).toBe(204);
-    expect(HttpStatus.BAD_REQUEST).toBe(400);
-    expect(HttpStatus.UNAUTHORIZED).toBe(401);
-    expect(HttpStatus.FORBIDDEN).toBe(403);
-    expect(HttpStatus.NOT_FOUND).toBe(404);
-    expect(HttpStatus.CONFLICT).toBe(409);
-    expect(HttpStatus.INTERNAL_SERVER_ERROR).toBe(500);
-    expect(HttpStatus.BAD_GATEWAY).toBe(502);
-    expect(HttpStatus.SERVICE_UNAVAILABLE).toBe(503);
+    const expected: [number, number][] = [
+      [HttpStatus.OK, 200],
+      [HttpStatus.CREATED, 201],
+      [HttpStatus.ACCEPTED, 202],
+      [HttpStatus.NO_CONTENT, 204],
+      [HttpStatus.BAD_REQUEST, 400],
+      [HttpStatus.UNAUTHORIZED, 401],
+      [HttpStatus.FORBIDDEN, 403],
+      [HttpStatus.NOT_FOUND, 404],
+      [HttpStatus.CONFLICT, 409],
+      [HttpStatus.INTERNAL_SERVER_ERROR, 500],
+      [HttpStatus.BAD_GATEWAY, 502],
+      [HttpStatus.SERVICE_UNAVAILABLE, 503],
+    ];
+    for (const [actual, exp] of expected) {
+      expect.soft(actual).toBe(exp);
+    }
   });
 
   it('can be used in type positions', () => {
@@ -127,14 +132,19 @@ describe('common.ts - HttpStatus constants', () => {
 
 describe('common.ts - ErrorCode enum', () => {
   it('has expected string values', () => {
-    expect(ErrorCode.VALIDATION_FAILED).toBe('VALIDATION_FAILED');
-    expect(ErrorCode.AUTHENTICATION_FAILED).toBe('AUTHENTICATION_FAILED');
-    expect(ErrorCode.AUTHORIZATION_FAILED).toBe('AUTHORIZATION_FAILED');
-    expect(ErrorCode.RESOURCE_NOT_FOUND).toBe('RESOURCE_NOT_FOUND');
-    expect(ErrorCode.CONFLICT).toBe('CONFLICT');
-    expect(ErrorCode.RATE_LIMITED).toBe('RATE_LIMITED');
-    expect(ErrorCode.INTERNAL_ERROR).toBe('INTERNAL_ERROR');
-    expect(ErrorCode.TIMEOUT).toBe('TIMEOUT');
+    const expected: [string, string][] = [
+      [ErrorCode.VALIDATION_FAILED, 'VALIDATION_FAILED'],
+      [ErrorCode.AUTHENTICATION_FAILED, 'AUTHENTICATION_FAILED'],
+      [ErrorCode.AUTHORIZATION_FAILED, 'AUTHORIZATION_FAILED'],
+      [ErrorCode.RESOURCE_NOT_FOUND, 'RESOURCE_NOT_FOUND'],
+      [ErrorCode.CONFLICT, 'CONFLICT'],
+      [ErrorCode.RATE_LIMITED, 'RATE_LIMITED'],
+      [ErrorCode.INTERNAL_ERROR, 'INTERNAL_ERROR'],
+      [ErrorCode.TIMEOUT, 'TIMEOUT'],
+    ];
+    for (const [actual, exp] of expected) {
+      expect.soft(actual).toBe(exp);
+    }
   });
 
   it('is type-safe when accessing members', () => {
@@ -154,9 +164,9 @@ describe('common.ts - Entity interface', () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     } as const;
-    expect(e.id).toBe('id_1');
-    expect(new Date(e.createdAt).toString()).not.toBe('Invalid Date');
-    expect(new Date(e.updatedAt).toString()).not.toBe('Invalid Date');
+    expect.soft(e.id).toBe('id_1');
+    expect.soft(new Date(e.createdAt).toString()).not.toBe('Invalid Date');
+    expect.soft(new Date(e.updatedAt).toString()).not.toBe('Invalid Date');
   });
 
   it('enforces readonly at type-level', () => {
@@ -180,8 +190,8 @@ describe('common.ts - Paginated<T> interface', () => {
       page: 1,
       pageSize: 10,
     };
-    expect(p.total).toBe(1);
-    expect(p.items[0]?.id).toBe('1');
+    expect.soft(p.total).toBe(1);
+    expect.soft(p.items[0]?.id).toBe('1');
     expectTypeOf(p.items).toEqualTypeOf<readonly Item[]>();
   });
 

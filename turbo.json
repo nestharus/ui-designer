@@ -13,14 +13,14 @@
       "persistent": true
     },
     "lint": {
-      "outputs": []
+      "outputs": [".eslintcache"]
     },
     "lint:fix": {
-      "outputs": []
+      "outputs": [".eslintcache"]
     },
     "type-check": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": ["**/*.tsbuildinfo"]
     },
     "test": {
       "outputs": ["coverage/**"]

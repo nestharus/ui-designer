@@ -20,48 +20,39 @@ import type {
 } from '../domain';
 
 // Robust URL validation helper
+const hasIllegalPathChars = (value: string): boolean => {
+  for (let i = 0; i < value.length; i++) {
+    const code = value.codePointAt(i);
+    if (!code) continue;
+    // Reject control characters (0-31, 127) and backslashes (92)
+    if ((code >= 0 && code <= 31) || code === 127 || code === 92) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const isValidUri = (uri: string): boolean => {
-  // Check if it's an absolute URL with a scheme
+  if (uri.length === 0) return false;
+
+  // Absolute URL with a scheme
   if (uri.includes('://')) {
     try {
-      new URL(uri);
       // Accept any successfully parsed URL (http, https, s3, etc.)
+      new URL(uri);
       return true;
     } catch {
       return false;
     }
   }
 
-  // Check if it's a root-relative path
+  // Root-relative path
   if (uri.startsWith('/')) {
-    // Ensure no illegal characters (null bytes, control characters, backslashes)
-    // Check each character code to avoid control characters
-    for (let i = 0; i < uri.length; i++) {
-      const code = uri.codePointAt(i);
-      if (!code) continue;
-      // Reject control characters (0-31, 127) and backslashes (92)
-      if ((code >= 0 && code <= 31) || code === 127 || code === 92) {
-        return false;
-      }
-    }
-    return uri.length > 1;
+    return !hasIllegalPathChars(uri) && uri.length > 1;
   }
 
-  // Check if it's a safe relative storage path (e.g., "assets/frame.png")
-  if (uri.length > 0) {
-    // Ensure no illegal characters (control characters, backslashes)
-    for (let i = 0; i < uri.length; i++) {
-      const code = uri.codePointAt(i);
-      if (!code) continue;
-      // Reject control characters (0-31, 127) and backslashes (92)
-      if ((code >= 0 && code <= 31) || code === 127 || code === 92) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  return false;
+  // Relative storage path (e.g., "assets/frame.png")
+  return !hasIllegalPathChars(uri);
 };
 
 describe('domain.ts - Project', () => {
@@ -86,8 +77,8 @@ describe('domain.ts - Project', () => {
 
   it('extends Entity and has required fields', () => {
     const e: Entity = project;
-    expect(e.id).toBe('p1');
-    expect(typeof project.name).toBe('string');
+    expect.soft(e.id).toBe('p1');
+    expect.soft(typeof project.name).toBe('string');
     expectTypeOf(project.description).toEqualTypeOf<string | null | undefined>();
     expectTypeOf(project.collaborators).toEqualTypeOf<readonly Collaborator[]>();
   });
@@ -107,8 +98,8 @@ describe('domain.ts - Collaborator', () => {
       role: 'engineer',
       joinedAt: new Date().toISOString(),
     };
-    expect(['designer', 'researcher', 'engineer', 'agent']).toContain(c.role);
-    expect(new Date(c.joinedAt).toString()).not.toBe('Invalid Date');
+    expect.soft(['designer', 'researcher', 'engineer', 'agent'].includes(c.role)).toBe(true);
+    expect.soft(new Date(c.joinedAt).toString()).not.toBe('Invalid Date');
   });
 
   it('CollaboratorRole assignment compatibility', () => {
@@ -129,8 +120,8 @@ describe('domain.ts - DesignToken', () => {
       category: 'brand',
       description: 'Primary brand color',
     };
-    expect(token.type).toBe('color');
-    expect(new Date(token.updatedAt).toString()).not.toBe('Invalid Date');
+    expect.soft(token.type).toBe('color');
+    expect.soft(new Date(token.updatedAt).toString()).not.toBe('Invalid Date');
   });
 
   it('DesignTokenType literals', () => {
@@ -183,8 +174,8 @@ describe('domain.ts - Agent', () => {
       'orchestrator',
     ];
     const statuses: AgentStatus[] = ['idle', 'executing', 'error', 'offline'];
-    expect(types).toContain('orchestrator');
-    expect(statuses).toContain('executing');
+    expect.soft(types.includes('orchestrator')).toBe(true);
+    expect.soft(statuses.includes('executing')).toBe(true);
   });
 });
 
@@ -225,7 +216,7 @@ describe('domain.ts - Prototype and PrototypeAsset', () => {
       metadata: Object.freeze({ darkMode: true }),
     };
     expectTypeOf(proto.assets).toEqualTypeOf<readonly PrototypeAsset[]>();
-    expect(proto.metadata.darkMode).toBe(true);
+    expect.soft(proto.metadata.darkMode).toBe(true);
   });
 
   it('PrototypeAssetKind literals and URI format', () => {
@@ -236,8 +227,7 @@ describe('domain.ts - Prototype and PrototypeAsset', () => {
       'interaction',
       'document',
     ];
-    expect(kinds).toContain(asset.kind);
-
-    expect(isValidUri(asset.uri)).toBe(true);
+    expect.soft(kinds.includes(asset.kind)).toBe(true);
+    expect.soft(isValidUri(asset.uri)).toBe(true);
   });
 });
