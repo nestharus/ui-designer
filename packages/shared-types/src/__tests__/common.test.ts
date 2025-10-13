@@ -3,11 +3,9 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import {
   type Nullable,
   type DeepPartial,
-  HttpStatus,
   ErrorCode,
   type Entity,
   type Paginated,
-  type HttpStatusCode,
   type CreatePayload,
   type UpdatePayload,
   type DeleteRequest,
@@ -34,7 +32,7 @@ describe('common.ts - Nullable', () => {
     const t1: T = {};
     const t2: T = { name: null };
     const t3: T = { name: 'ok' };
-    expect([t1, t2, t3]).toHaveLength(3);
+    expect.soft([t1, t2, t3]).toHaveLength(3);
   });
 });
 
@@ -47,7 +45,7 @@ describe('common.ts - DeepPartial', () => {
     const p1: DeepPartial<Foo> = {};
     const p2: DeepPartial<Foo> = { a: 1 };
     const p3: DeepPartial<Foo> = { b: 'x' };
-    expect([p1, p2, p3]).toHaveLength(3);
+    expect.soft([p1, p2, p3]).toHaveLength(3);
   });
 
   it('recursively partializes nested objects', () => {
@@ -55,7 +53,7 @@ describe('common.ts - DeepPartial', () => {
       inner: { deep: { v: number } };
     }
     const p: DeepPartial<Nested> = { inner: { deep: {} } };
-    expect(p.inner?.deep).toBeDefined();
+    expect.soft(p.inner?.deep).toBeDefined();
   });
 
   it('handles arrays and readonly arrays', () => {
@@ -100,36 +98,6 @@ describe('common.ts - DeepPartial', () => {
   });
 });
 
-describe('common.ts - HttpStatus constants', () => {
-  it('matches expected numeric values', () => {
-    const expected: [number, number][] = [
-      [HttpStatus.OK, 200],
-      [HttpStatus.CREATED, 201],
-      [HttpStatus.ACCEPTED, 202],
-      [HttpStatus.NO_CONTENT, 204],
-      [HttpStatus.BAD_REQUEST, 400],
-      [HttpStatus.UNAUTHORIZED, 401],
-      [HttpStatus.FORBIDDEN, 403],
-      [HttpStatus.NOT_FOUND, 404],
-      [HttpStatus.CONFLICT, 409],
-      [HttpStatus.INTERNAL_SERVER_ERROR, 500],
-      [HttpStatus.BAD_GATEWAY, 502],
-      [HttpStatus.SERVICE_UNAVAILABLE, 503],
-    ];
-    for (const [actual, exp] of expected) {
-      expect.soft(actual).toBe(exp);
-    }
-  });
-
-  it('can be used in type positions', () => {
-    interface WithStatus {
-      status: HttpStatusCode;
-    }
-    const obj: WithStatus = { status: HttpStatus.OK };
-    expect(obj.status).toBe(HttpStatus.OK);
-  });
-});
-
 describe('common.ts - ErrorCode enum', () => {
   it('has expected string values', () => {
     const expected: [string, string][] = [
@@ -149,7 +117,7 @@ describe('common.ts - ErrorCode enum', () => {
 
   it('is type-safe when accessing members', () => {
     const code: ErrorCode = ErrorCode.VALIDATION_FAILED;
-    expect(code).toBe(ErrorCode.VALIDATION_FAILED);
+    expect.soft(code).toBe(ErrorCode.VALIDATION_FAILED);
 
     // Verify the enum member is compatible with the ErrorCode type
     const acceptsErrorCode = (_: ErrorCode) => true;
@@ -202,7 +170,7 @@ describe('common.ts - Paginated<T> interface', () => {
       page: 1,
       pageSize: 3,
     };
-    expect(numbers.items[1]).toBe(2);
+    expect.soft(numbers.items[1]).toBe(2);
     expectTypeOf(numbers.items[0]).toEqualTypeOf<number | undefined>();
   });
 });
@@ -211,7 +179,7 @@ describe('common.ts - CreatePayload', () => {
   it('omits base entity fields from payload', () => {
     type Payload = CreatePayload<ExampleEntity>;
     const payload: Payload = { name: 'test', count: 1 };
-    expect(payload.name).toBe('test');
+    expect.soft(payload.name).toBe('test');
     expectTypeOf(payload).toExtend<{ name: string; count: number }>();
   });
 });
@@ -220,7 +188,7 @@ describe('common.ts - UpdatePayload', () => {
   it('requires id while partializing entity fields', () => {
     type Update = UpdatePayload<ExampleEntity>;
     const update: Update = { id: '1', name: 'updated' };
-    expect(update.id).toBe('1');
+    expect.soft(update.id).toBe('1');
     expectTypeOf<Update['id']>().toEqualTypeOf<string>();
   });
 });
@@ -228,7 +196,7 @@ describe('common.ts - UpdatePayload', () => {
 describe('common.ts - DeleteRequest', () => {
   it('captures required id and optional soft flag', () => {
     const request: DeleteRequest = { id: 'delete-me', soft: true };
-    expect(request.soft).toBe(true);
+    expect.soft(request.soft).toBe(true);
     expectTypeOf(request.id).toEqualTypeOf<string>();
   });
 });

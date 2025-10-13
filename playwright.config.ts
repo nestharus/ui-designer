@@ -1,29 +1,30 @@
 import { defineConfig, devices } from '@playwright/test';
+import type { PlaywrightTestConfig } from '@playwright/test';
+import * as process from "node:process";
 
-export default defineConfig({
-  testDir: './apps/web/e2e',
-
-  // Run tests in files in parallel
-  fullyParallel: true,
-
-  // Fail the build on CI if you accidentally left test.only in the source code
+const config: PlaywrightTestConfig = {
+  testDir: './apps/web/tests/e2e',
+  timeout: 120_000,
+  fullyParallel: !process.env.CI,
   forbidOnly: !!process.env.CI,
-
-  // Retry on CI only
   retries: process.env.CI ? 2 : 0,
-
-  // Opt out of parallel tests on CI
-  workers: process.env.CI ? 1 : undefined,
-
-  // Reporter to use
-  reporter: 'html',
-
+  // Opt out of full parallelism on CI; limited parallelism keeps wall time reasonable across 3 browsers
+  // Tune based on observed runtime: raise to 2–3 workers if needed, or increase CI timeout.
+  ...(process.env.CI ? { workers: 1 } : {}),
+  reporter: [
+    ['html', { open: 'never', outputFolder: 'playwright-report' }],
+    ['json', { outputFile: 'playwright-report/results.json' }],
+    ['github']
+  ],
   use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:3000',
+    actionTimeout: 20_000,
+    navigationTimeout: 60_000,
+    trace: 'retain-on-failure',
   },
-
-  // Configure projects for major browsers
+  expect: {
+    timeout: 10_000,
+  },
   projects: [
     {
       name: 'chromium',
@@ -38,12 +39,16 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
-
-  // Run your local dev server before starting the tests
   webServer: {
     command: 'bun run --filter=@ui-designer/web dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    port: 3000,
+    reuseExistingServer: true,
+    timeout: 120_000,
+    env: {
+      HOST: '127.0.0.1',
+      PORT: '3000',
+    },
   },
-});
+};
+
+export default defineConfig(config);

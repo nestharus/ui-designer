@@ -111,10 +111,10 @@ export function Counter() {
 
 ### Setup
 
-Create stores in `apps/web/stores/`:
+Create stores in `apps/web/store/`:
 
 ```typescript
-// apps/web/stores/ui.ts
+// apps/web/store/ui.ts
 import { create } from 'zustand';
 
 interface UIState {
@@ -135,7 +135,7 @@ export const useUIStore = create<UIState>((set) => ({
 ```typescript
 'use client';
 
-import { useUIStore } from '@/stores/ui';
+import { useUIStore } from '@/store/ui';
 
 export function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useUIStore();
@@ -195,8 +195,8 @@ export const usePreferences = create<PreferencesState>()(
     }),
     {
       name: 'user-preferences',
-    }
-  )
+    },
+  ),
 );
 ```
 
@@ -313,7 +313,7 @@ const mutation = useMutation({
 
     // Optimistically update
     queryClient.setQueryData(['projects'], (old: any[]) =>
-      old.map((p) => (p.id === newProject.id ? newProject : p))
+      old.map((p) => (p.id === newProject.id ? newProject : p)),
     );
 
     return { previous };
@@ -334,7 +334,7 @@ const mutation = useMutation({
 ```typescript
 // app/projects/page.tsx (Server Component)
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { getQueryClient } from '@/src/lib/query-client';
+import { getQueryClient } from '@/lib/query-client';
 import { ProjectsList } from './projects-list';
 
 async function fetchProjects() {
@@ -592,7 +592,7 @@ export default async function RootLayout({ children }) {
 'use client';
 
 import { useEffect } from 'react';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/store/auth';
 
 export function AuthProvider({ user, children }) {
   const setAuth = useAuthStore((state) => state.setAuth);
@@ -637,7 +637,7 @@ export const useFilters = create<FiltersState>((set) => ({
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useFilters } from '@/stores/filters';
+import { useFilters } from '@/store/filters';
 
 export function ProjectsTable() {
   const { search, status } = useFilters();
@@ -763,8 +763,8 @@ const useStore = create(
     (set) => ({
       /* state */
     }),
-    { name: 'my-store' }
-  )
+    { name: 'my-store' },
+  ),
 );
 ```
 

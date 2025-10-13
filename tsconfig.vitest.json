@@ -1,7 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "types": ["bun", "vitest/globals"]
+    "types": ["bun", "vitest/globals"],
+    "paths": {
+      "@ui-designer/shared-types": ["./packages/shared-types/src/index.ts"]
+    }
   },
   "include": ["vitest.config.ts", "test/**/*.ts"],
   "exclude": ["packages/**/*", "apps/**/*", "services/**/*"]

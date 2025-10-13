@@ -1,6 +1,6 @@
 # @ui-designer/shared-types
 
-Shared TypeScript type definitions for cross-service contracts within the UI Designer monorepo.
+Shared TypeScript type definitions for cross-service contracts within the UI Designer monorepo. This package is types-only — no runtime helpers.
 
 ## Purpose
 
@@ -21,46 +21,22 @@ bun run build
 
 The build output is generated in the `dist/` directory and is referenced by other packages via TypeScript project references.
 
-## Usage
+## Usage (types only)
 
 ```ts
-import { queryOptions, useQuery } from '@tanstack/react-query';
-import {
-  ErrorCode,
-  queryKeys,
-  type AppError,
-  type Project,
-} from '@ui-designer/shared-types';
+import type { AppError, Project, ErrorCode } from '@ui-designer/shared-types';
+```
 
-const projectQuery = queryOptions({
-  queryKey: queryKeys.projects.detail('abc'),
-  queryFn: async (): Promise<Project> => {
-    const response = await fetch('/api/projects/abc');
-    if (!response.ok) {
-      const error: AppError = {
-        code: response.status === 404 ? ErrorCode.RESOURCE_NOT_FOUND : ErrorCode.INTERNAL_ERROR,
-        message: 'Failed to fetch project',
-        statusCode: response.status,
-      };
-      throw error;
-    }
-    return response.json() as Promise<Project>;
-  },
-});
+For runtime query helpers (e.g., `queryKeys`), use `@ui-designer/query`:
 
-function ProjectView() {
-  const { data, error, isLoading } = useQuery(projectQuery);
-  if (isLoading) return <span>Loading...</span>;
-  if (error) return <span>Error: {error.message}</span>;
-  return <span>{data.name}</span>;
-}
+```ts
+import { queryKeys } from '@ui-designer/query';
 ```
 
 ## Structure
 
 - `common.ts` – Utility helpers and primitives (`ErrorCode`, `Paginated`, literal enums)
 - `query-config.ts` – Defines `AppError` type for TanStack Query error handling
-- `query-keys.ts` – Query key factories for consistent cache scoping
 - `domain.ts` – Core business entities (projects, design tokens, agents, prototypes)
 - `index.ts` – Barrel export exposing the public API surface
 

@@ -10,7 +10,7 @@ afterEach(() => {
   cleanup();
 });
 
-// Mock Next.js router if needed
+// Mock Next.js router and helpers used in components
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -20,4 +20,17 @@ vi.mock('next/navigation', () => ({
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
+  // Used by app/emotion-registry in client components
+  useServerInsertedHTML: (cb: () => any) => {
+    // call once to simulate server insertion hook; ignore return
+    try {
+      return cb();
+    } catch {
+      // no-op in tests
+      return null;
+    }
+  },
 }));
+
+// Stub Next.js server-only module for tests
+vi.mock('server-only', () => ({}));

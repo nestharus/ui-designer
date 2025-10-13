@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "jsx": "preserve",
     "exactOptionalPropertyTypes": false,
@@ -11,15 +12,25 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./*"],
+      "@ui-designer/query": ["../../packages/query/src"],
+      "@ui-designer/shared-types": ["../../packages/shared-types/src"]
     }
   },
   "include": [
     "next-env.d.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
-    "src/**/*.ts",
-    "src/**/*.tsx",
+    "features/**/*.ts",
+    "features/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "hooks/**/*.ts",
+    "hooks/**/*.tsx",
+    "store/**/*.ts",
+    "store/**/*.tsx",
+    "server/**/*.ts",
+    "server/**/*.tsx",
     ".next/types/**/*.ts"
   ],
   "exclude": [
@@ -34,6 +45,9 @@
   "references": [
     {
       "path": "../../packages/shared-types"
+    },
+    {
+      "path": "../../packages/query"
     }
   ]
 }

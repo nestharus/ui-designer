@@ -89,7 +89,8 @@ Use `queryOptions()` to centralize data requirements and couple them with the sh
 
 ```typescript
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { queryKeys, ErrorCode, type AppError } from '@ui-designer/shared-types';
+import { queryKeys } from '@ui-designer/query';
+import { ErrorCode, type AppError } from '@ui-designer/shared-types';
 
 const projectListQuery = queryOptions({
   queryKey: queryKeys.projects.list({ page: 1, pageSize: 20 }),

@@ -11,7 +11,15 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix --cache",
     "type-check": "tsc --noEmit",
     "test": "vitest run --config ./vitest.config.ts",
-    "test:watch": "vitest --config ./vitest.config.ts"
+    "test:watch": "vitest --config ./vitest.config.ts",
+    "test:unit": "vitest run --config ./vitest.config.unit.ts",
+    "test:unit:watch": "vitest --config ./vitest.config.unit.ts",
+    "test:integration": "vitest run --config ./vitest.config.integration.ts",
+    "test:integration:watch": "vitest --config ./vitest.config.integration.ts",
+    "test:all": "vitest run --config ./vitest.config.ts",
+    "test:coverage:unit": "vitest run --coverage --config ./vitest.config.unit.ts",
+    "test:coverage:integration": "vitest run --coverage --config ./vitest.config.integration.ts",
+    "test:coverage:all": "vitest run --coverage --config ./vitest.config.ts"
   },
   "dependencies": {
     "@emotion/cache": "^11.13.0",
@@ -26,6 +34,7 @@
     "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-query-devtools": "^5.90.2",
     "@ui-designer/shared-types": "workspace:*",
+    "@ui-designer/query": "workspace:*",
     "next": "^15.5.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -34,8 +43,8 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
     "@testing-library/react": "^16.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@vitejs/plugin-react": "^5.0.4",

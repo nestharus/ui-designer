@@ -507,7 +507,7 @@ export function DynamicCard({ isActive }) {
 
 import { ThemeProvider } from '@emotion/react';
 import styled from '@emotion/styled';
-import { useTheme } from '@/stores/theme';
+import { useTheme } from '@/store/theme';
 
 const Container = styled.div`
   background: ${(props) => props.theme.colors.background};

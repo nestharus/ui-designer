@@ -99,6 +99,114 @@ Notes:
   Use `it.each` when each tuple produces a single test; use `describe.each` when multiple tests share the same parameters and you need several `it` blocks.
   Prefer generator functions (`function*`) for traversals over materializing arrays to avoid large intermediate collections and to express intent more clearly (similar to Java Streams).
 
+### Soft vs. Hard Assertions
+
+- Prefer `expect.soft(...)` for assertions in Vitest and Playwright.
+- Soft assertions collect all failures and report them together at the end of the test, improving triage.
+- Hard assertions (`expect(...)`) are allowed only when an immediate fail-fast is essential (e.g., before an expensive step).
+- Lint rule: tests are enforced to use `expect.soft` via an ESLint rule that disallows `expect(...)` in test files.
+
+Example:
+
+```ts
+// ✅ Preferred
+expect.soft(user.name).toBe('Jane');
+expect.soft(user.age).toBeGreaterThan(18);
+
+// ❌ Avoid (use only when fail-fast is truly needed)
+expect(user.name).toBe('Jane');
+```
+
+Playwright example:
+
+```ts
+// Prefer soft for multiple conditions
+await expect.soft(page.getByTestId('app-root')).toBeVisible();
+await expect.soft(page.locator('svg[data-icon="rocket"]')).toBeVisible();
+```
+
+Sonar rule nuance:
+
+- Some static analysis rules (e.g., `sonarjs/assertions-in-tests`) may not recognize `expect.soft` as an assertion.
+- If a false positive appears, add a targeted disable comment at the top of the file or near the assertion:
+
+```ts
+/* eslint-disable sonarjs/assertions-in-tests */
+```
+
+Use this sparingly, and only when `expect.soft` is used correctly.
+
+#### Playwright Async Patterns
+
+Playwright has two kinds of assertions:
+
+- Locator assertions (async, auto‑retry): use `await expect.soft(locator).matcher()`
+- Plain value assertions (sync): `const value = await fn(); expect.soft(value).toBe(expected)`
+
+Good patterns:
+
+```ts
+// Locator assertions — always await the matcher
+await expect.soft(page.getByTestId('app-root')).toBeVisible();
+await expect.soft(page.locator('h1')).toContainText('Welcome');
+
+// Plain values — await the producer, not the expect
+const status = await getStatus();
+expect.soft(status).toBe('OK');
+```
+
+Avoid these:
+
+```ts
+// ❌ Awaiting the wrapper without a matcher (no assertion runs)
+await expect.soft(page.locator('h1'));
+
+// ❌ Forgetting to await async matcher (returns a Promise)
+expect.soft(page.locator('h1')).toBeVisible();
+
+// ❌ Awaiting expect on a plain value (matcher is sync)
+await expect.soft(status).toBe('OK');
+```
+
+Rule of thumb:
+
+- If the subject is a Playwright `Locator`/`Page`, await the matcher: `await expect.soft(locator).toBe...`
+- If the subject is a plain value, await the function first, then assert synchronously: `expect.soft(value).toBe(...)`
+
+Common Pitfalls That Cause Hangs:
+
+- Awaiting the wrapper without calling a matcher: `await expect.soft(locator);`
+- Forgetting to await an async matcher: `expect.soft(locator).toBeVisible();`
+- Very long/never‑resolving matchers due to auto‑wait conditions that never stabilize
+- Dangling async work elsewhere (unawaited `waitFor*`, open websockets, un-cleared `setInterval`)
+
+Quick debugging tips:
+
+- Lower the assertion timeout: `test.use({ expect: { timeout: 2000 } })`
+- Enable tracing or debug logs: `--debug` or `DEBUG=pw:api`
+- Search for unawaited matchers and wrapper‑only awaits
+
+Note: `await expect.soft(...)` alone does not hang; it simply resolves without running a matcher. Apparent hangs usually come from not awaiting the matcher or a matcher that never stabilizes.
+
+See `docs/e2e-testing-guide.md` for more Playwright‑specific patterns.
+
+### Automated Migration
+
+The codemod converts `expect(...)` to `expect.soft(...)` and preserves `await` when present (e.g., `await expect(...)` becomes `await expect.soft(...)`). It handles both Vitest (sync) and Playwright (async) patterns.
+
+Run the codemod across unit, integration, and E2E tests:
+
+```bash
+bun run codemod:expect-soft
+```
+
+After running, manually review Playwright tests to ensure:
+
+- All `await expect.soft(locator)` calls include a matcher (e.g., `.toBeVisible()`)
+- Plain value assertions follow: `const value = await fn(); expect.soft(value).toBe(...)` (no `await` on `expect.soft`)
+
+The codemod is a starting point; manual review avoids the pitfalls in the “Playwright Async Patterns” section.
+
 Nested blocks for initialization and related tests:
 
 ```ts
@@ -190,20 +298,27 @@ describe('UserService', () => {
 
 ## Running Tests
 
-### Basic Commands
+### Unit, Integration, and All Tests
 
 ```bash
-# Run all tests once
-bun run test
+# Unit tests (co-located under app/, features/, lib/, hooks/, store/, server/)
+bun run test:unit
+bun run test:unit:watch
 
-# Run tests in watch mode
-bun run test:watch
+# Integration tests (apps/web/tests/integration/)
+bun run test:integration
+bun run test:integration:watch
 
-# Run tests with coverage
-bun run test:coverage
+# All tests using the base config
+bun run test:all
+
+# With coverage
+bun run test:coverage:unit
+bun run test:coverage:integration
+bun run test:coverage:all
 
 # Run specific test file (pass args to Vitest)
-bun run test -- path/to/test.ts
+bun run test:all -- path/to/test.ts
 
 # Or use bunx vitest directly
 bunx vitest run path/to/test.ts
@@ -211,11 +326,13 @@ bunx vitest run path/to/test.ts
 # Run tests matching pattern
 bunx vitest run --grep "UserService"
 
-# Run specific package tests
+# Run tests for a specific package
 bun run --filter @ui-designer/shared-types test
 ```
 
-**Note:** All test commands use Vitest (not Bun's built-in test runner). The `bun run test` script proxies to `vitest run`.
+**Note:** All test commands use Vitest (not Bun's built-in test runner). The unit/integration configs are in `apps/web/` and the base config runs all tests.
+
+E2E tests live at `apps/web/tests/e2e/` and are configured via the root `playwright.config.ts`.
 
 ### Test Filtering
 
@@ -238,18 +355,36 @@ describe.skip('UserService', () => {});
 ### Viewing Coverage
 
 ```bash
-# Generate coverage report
-bun run test:coverage
+# Generate coverage report (all tests)
+bun run test:coverage:all
 
 # Open HTML coverage report
 open coverage/index.html
+
+# LLM coverage input: per-workspace JSON
+# Vitest writes coverage/coverage-final.json alongside lcov + HTML.
+# For web app:
+cat apps/web/coverage/coverage-final.json | jq . > /dev/null
+# For packages:
+cat packages/shared-types/coverage/coverage-final.json | jq . > /dev/null
+cat packages/query/coverage/coverage-final.json | jq . > /dev/null
+
+# Optionally merge JSONs for a single LLM input (example approach)
+# jq -s 'reduce .[] as $item ({}; . * $item)' \
+#   apps/web/coverage/coverage-final.json \\
+#   packages/shared-types/coverage/coverage-final.json \\
+#   packages/query/coverage/coverage-final.json \\
+#   > coverage/coverage-final-merged.json
 ```
 
 ### Coverage Goals
 
-- Aim for **80%+ code coverage**
-- Focus on critical business logic
-- Don't sacrifice test quality for coverage numbers
+- Unit tests: aim for **80%+** (branches, functions, lines, statements)
+- Integration tests: aim for **70%+**
+- Overall target: **80%**
+- Focus on critical business logic; do not chase 100% blindly
+
+Note: `packages/shared-types` uses the same 80% coverage thresholds as other packages (see `packages/shared-types/vitest.config.ts`). While it is a types-first package, it contains runtime constructs (enums, helpers) that are validated at runtime and included in coverage.
 
 ### What to Test
 
@@ -398,6 +533,32 @@ it('should load and display user data', async () => {
   });
 });
 ```
+
+## E2E Testing Best Practices
+
+When testing dynamic content in SSR apps (like Next.js), avoid hardcoded timeouts. Prefer Playwright's web-first assertions which automatically retry until conditions are met or the assertion timeout elapses.
+
+Recommended — use a project-specific hydration marker (e.g., `data-testid="app-root"`) instead of assuming a semantic element like `main` exists everywhere.
+
+Example — wait for hydration with an explicit marker, then assert on dynamic elements:
+
+```ts
+import { test, expect } from '@playwright/test';
+
+test('Font Awesome icons visible after hydration', async ({ page }) => {
+  await page.goto('/');
+
+  // Wait for the app hydration marker
+  await expect(page.getByTestId('app-root')).toBeVisible();
+
+  // Then assert on dynamically rendered content
+  await expect(page.locator('svg[data-icon="coffee"]')).toBeVisible();
+});
+```
+
+Note: `page.waitForLoadState('networkidle')` can be used sparingly to account for apps that finish hydrating after network idleness. Prefer explicit hydration markers where possible, as `networkidle` can be overly broad and slow.
+
+This pattern eliminates race conditions during React hydration and is preferred over `waitForTimeout`. See the full guide in `docs/e2e-testing-guide.md` for comprehensive Playwright patterns.
 
 ## Turbo Pipeline Configuration
 
@@ -557,3 +718,10 @@ it('should transform user data correctly', () => {
 - [Vitest Documentation](https://vitest.dev/)
 - [Testing Library Documentation](https://testing-library.com/)
 - [Testing Best Practices](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
+
+### Test Placement Strategy
+
+- Co-locate unit tests under `__tests__/` next to the code they cover (e.g., `features/<name>/__tests__`, `lib/__tests__`).
+- Put cross-cutting integration tests under `apps/web/tests/integration/` and shared fixtures under `apps/web/tests/fixtures/`.
+- Keep E2E tests under `apps/web/tests/e2e/`.
+- `packages/shared-types` participates in coverage with 80% thresholds (it contains runtime code validated by tests).

@@ -16,7 +16,7 @@ bun run test:e2e
 bun run test:e2e:ui
 
 # Run specific test file
-bunx playwright test apps/web/e2e/home.spec.ts
+bunx playwright test apps/web/tests/e2e/home.spec.ts
 
 # Run tests in headed mode (see browser)
 bunx playwright test --headed
@@ -116,6 +116,52 @@ await expect(page.locator('input')).toHaveValue('test');
 await expect(page.locator('.item')).toHaveCount(5);
 ```
 
+### Soft Assertions in Playwright
+
+Playwright supports `expect.soft(...)` to collect multiple assertion failures within a single test.
+
+- For locator assertions, always use `await expect.soft(locator).matcher()` to benefit from auto‑wait and retries.
+- For plain values, await the async function first, then assert synchronously: `const value = await getStatus(); expect.soft(value).toBe('OK');`.
+
+Good patterns:
+
+```ts
+await expect.soft(page.getByTestId('app-root')).toBeVisible();
+await expect.soft(page.locator('h1')).toContainText('Welcome');
+
+const status = await getStatus();
+expect.soft(status).toBe('OK');
+```
+
+Avoid these:
+
+```ts
+// Awaiting the wrapper without a matcher (no assertion runs)
+await expect.soft(page.locator('h1'));
+
+// Forgetting to await async matcher
+expect.soft(page.locator('h1')).toBeVisible();
+
+// Awaiting expect on a plain value (matcher is sync)
+await expect.soft(status).toBe('OK');
+```
+
+Why Tests Hang
+
+- Awaiting the wrapper without a matcher
+- Forgetting to await async matchers
+- Matchers that never stabilize due to conditions that don’t become true
+- Dangling async work (unawaited waits, open sockets, setInterval)
+
+Debugging tips:
+
+- Lower assertion timeout: `test.use({ expect: { timeout: 2000 } })`
+- Use `--debug` or `DEBUG=pw:api`
+- Enable tracing (`trace: 'retain-on-failure'`) and inspect traces
+
+Timeout configurations in `playwright.config.ts` (test timeout, action timeout, expect timeout) help prevent infinite hangs.
+See the general `docs/testing-guide.md` for broader soft assertion guidance.
+
 ### Testing Responsive Design
 
 ```typescript
@@ -154,10 +200,37 @@ Playwright configuration is in `playwright.config.ts` at the repository root.
 
 ### Key Settings
 
-- **testDir**: `./apps/web/e2e` - Where test files are located
-- **webServer**: Automatically starts the Next.js dev server before tests
+- **testDir**: `./apps/web/tests/e2e` - Where test files are located
+- **webServer**: Automatically starts the Next.js dev server before tests (120s timeout)
 - **baseURL**: `http://localhost:3000` - Base URL for navigation
 - **retries**: 2 on CI, 0 locally - Retry flaky tests on CI
+
+### Troubleshooting
+
+#### Tests Hang or Timeout
+
+If `bun run test:e2e` hangs indefinitely:
+
+1. **Check if dev server starts**: Run `bun run --filter=@ui-designer/web dev` manually to verify the server starts successfully
+2. **Verify port 3000 is free**: Kill any processes using port 3000
+3. **Check webServer timeout**: The config allows 120s for the server to start; increase if needed on slower machines
+4. **Use existing server**: If the dev server is already running, Playwright will reuse it (unless in CI)
+
+#### Tests Hang During Execution
+
+If tests start but never complete (not a server startup issue), the most common causes are:
+
+1. Unawaited async matchers: `expect.soft(locator).toBeVisible();` without `await` returns a Promise that can leave teardown waiting.
+2. Awaiting the wrapper without a matcher: `await expect.soft(locator);` resolves immediately but never runs an assertion, leading to confusing passes or later hangs.
+3. Matchers that never stabilize: e.g., `await expect.soft(page).toHaveURL(/never-matches/)` will retry until the expect timeout (5s in config by default) then fail.
+4. Dangling async work: unawaited `page.waitFor*`, open websockets, or `setInterval` not cleared.
+
+Fix:
+
+- Always await async matchers
+- Never await the wrapper alone
+- Keep reasonable timeouts (configured in `playwright.config.ts`)
+- Use `--debug`, tracing, or `DEBUG=pw:api` to pinpoint where the hang occurs
 
 ### Running Against Production
 
@@ -171,6 +244,7 @@ bun run build
 bun run --filter=@ui-designer/web start
 
 # In another terminal, run tests
+# The Playwright config picks up PLAYWRIGHT_BASE_URL automatically
 PLAYWRIGHT_BASE_URL=http://localhost:3000 bun run test:e2e
 ```
 
@@ -237,6 +311,28 @@ test('should work', async ({ page }) => {
   await page.screenshot({ path: 'screenshot.png' });
 });
 ```
+
+### 6. Wait for Hydration in SSR Apps
+
+In Next.js (or any SSR) apps, some UI (e.g., Font Awesome icons) may not be immediately visible after navigation because React must hydrate the server-rendered HTML. Before asserting on dynamically rendered elements, first wait for a stable, explicit hydration marker in your app (e.g., `data-testid="app-root"`).
+
+```ts
+import { test, expect } from '@playwright/test';
+
+test('icons visible after hydration', async ({ page }) => {
+  await page.goto('/');
+
+  // Prefer an explicit hydration marker in your app shell
+  await expect(page.getByTestId('app-root')).toBeVisible();
+
+  // Now assert on dynamic content rendered during/after hydration
+  await expect(page.locator('svg[data-icon="coffee"]')).toBeVisible();
+});
+```
+
+Note: `page.waitForLoadState('networkidle')` can be used with caution if hydration completion correlates with network idleness in your app. However, explicit markers are faster and more reliable.
+
+This approach relies on Playwright's web-first assertions (auto-retry) and avoids brittle, hardcoded timeouts. It's especially important for client components and third-party libraries that inject DOM during hydration.
 
 ## Debugging
 

@@ -85,7 +85,7 @@ describe('domain.ts - Project', () => {
 
   it('ProjectStatus literal type constraints', () => {
     const statuses: ProjectStatus[] = ['draft', 'in-progress', 'review', 'approved', 'archived'];
-    expect(statuses.includes(project.status)).toBe(true);
+    expect.soft(statuses.includes(project.status)).toBe(true);
   });
 });
 
@@ -104,7 +104,7 @@ describe('domain.ts - Collaborator', () => {
 
   it('CollaboratorRole assignment compatibility', () => {
     const role: CollaboratorRole = 'agent';
-    expect(role).toBe('agent');
+    expect.soft(role).toBe('agent');
   });
 });
 
@@ -126,7 +126,7 @@ describe('domain.ts - DesignToken', () => {
 
   it('DesignTokenType literals', () => {
     const types: DesignTokenType[] = ['color', 'space', 'radius', 'shadow', 'typography', 'motion'];
-    expect(types).toContain('shadow');
+    expect.soft(types).toContain('shadow');
   });
 
   it('DesignTokenCategory literals', () => {
@@ -138,7 +138,7 @@ describe('domain.ts - DesignToken', () => {
       'component',
       'experimental',
     ];
-    expect(cats).toContain('semantic');
+    expect.soft(cats).toContain('semantic');
   });
 });
 
@@ -161,7 +161,7 @@ describe('domain.ts - Agent', () => {
       avatarUrl: 'https://example.com/a.png',
     };
     expectTypeOf(agent.capabilities).toEqualTypeOf<readonly AgentCapability[]>();
-    expect(agent.type).toBe('synthesis');
+    expect.soft(agent.type).toBe('synthesis');
   });
 
   it('AgentType and AgentStatus literals', () => {

@@ -4,9 +4,6 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
-    "paths": {
-      "@ui-designer/shared-types": ["./packages/shared-types/src/index.ts"]
-    },
     "esModuleInterop": true,
     "incremental": true,
     "jsx": "react-jsx",

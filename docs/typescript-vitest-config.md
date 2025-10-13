@@ -15,7 +15,7 @@ When using Bun as a package manager with packages that have peer dependencies (l
 
 For packages with peer dependencies that expose `.ts` source files (common with modern libraries), you have two options:
 
-**Option 1: Skip type-check for that package (Recommended)**
+#### Option 1: Skip type-check for that package (Recommended)
 
 Remove or comment out the `type-check` script in the package's `package.json`:
 
@@ -33,7 +33,7 @@ The package will still be type-checked during:
 - IDE/editor usage
 - When imported by other packages
 
-**Option 2: Use a separate tsconfig for type-checking**
+#### Option 2: Use a separate tsconfig for type-checking
 
 Create a `tsconfig.typecheck.json` that's less strict:
 
@@ -124,24 +124,25 @@ The base configuration defines settings shared across all packages:
 
 #### Path Aliases
 
-Add a `paths` mapping to enable direct source imports during development:
+We intentionally do NOT define path aliases in `tsconfig.base.json` to avoid changing runtime resolution for production builds.
 
-```json
+Instead, we scope the alias for `@ui-designer/shared-types` to tooling-only configs:
+
+```jsonc
+// tsconfig.eslint.json and tsconfig.vitest.json
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@ui-designer/shared-types": ["./packages/shared-types/src/index.ts"]
-    }
-  }
+      "@ui-designer/shared-types": ["./packages/shared-types/src/index.ts"],
+    },
+  },
 }
 ```
 
 Notes:
 
-- Allows importing from `@ui-designer/shared-types` without building first
-- Works alongside project references and standard `tsc --build`
-- Speeds up local iteration; production builds still rely on emitted declarations
+- ESLint and Vitest get fast, source-level types for developer ergonomics.
+- Production builds resolve `@ui-designer/shared-types` via the workspace package `exports` (types-only), preserving package boundaries.
 
 **Key Points:**
 

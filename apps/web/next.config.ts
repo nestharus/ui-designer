@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: resolve(__dirname, '../../'),
 
   // Transpile workspace packages
-  transpilePackages: ['@ui-designer/shared-types'],
+  transpilePackages: ['@ui-designer/shared-types', '@ui-designer/query'],
 
   // Disable ESLint during builds (we run it separately)
   eslint: {

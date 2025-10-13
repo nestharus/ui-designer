@@ -93,7 +93,7 @@ interface ApiResponse<T> {
 Register a global error type and use TanStack Query's built-in error handling:
 
 ```typescript
-// In a global types file (e.g., packages/shared-types/src/query-config.ts)
+// In application code (e.g., apps/web/lib/query-client.ts)
 import '@tanstack/react-query'
 
 export interface AppError {
@@ -142,6 +142,8 @@ function ProjectView({ projectId }: { projectId: string }) {
   return <div>{data.name}</div>
 }
 ```
+
+Note: Do not place module augmentation in `packages/shared-types`. See `packages/shared-types/README.md` for the rationale (types-only package; avoids Bun/TS traversal issues).
 
 **Key Benefits:**
 
@@ -363,10 +365,10 @@ function CreateProjectForm() {
 
 **✅ Preferred Pattern:**
 
-Create query key factories for consistency:
+Create query key factories for consistency (provided by `@ui-designer/query`):
 
 ```typescript
-// packages/shared-types/src/query-keys.ts
+// packages/query/src/query-keys.ts
 export const queryKeys = {
   projects: {
     all: ['projects'] as const,

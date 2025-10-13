@@ -36,6 +36,17 @@ See:
 - Styling and components: `docs/styling-guide.md`, `docs/fontawesome-usage.md`
 - Commands and workflow: `docs/command-reference.md`, `docs/development-workflow.md`
 
+## Testing
+
+This project uses soft assertions (`expect.soft(...)`) to collect multiple failures in a single run. For Playwright E2E tests, always await async matchers (e.g., `await expect.soft(locator).toBeVisible()`). See `docs/testing-guide.md` for detailed guidance on soft assertions and async patterns.
+
+Common commands:
+
+- `bun run test:unit` — run unit tests
+- `bun run test:integration` — run integration tests
+- `bun run test:e2e` — run Playwright tests
+- `bun run codemod:expect-soft` — convert `expect(...)` to `expect.soft(...)` across tests
+
 ## Repository Layout
 
 ```text
@@ -44,11 +55,19 @@ apps/
     app/                 # Route segments and layouts
     app/providers.tsx    # Client providers (TanStack Query, Devtools)
     app/emotion-registry.tsx  # Emotion CacheProvider integration
-    src/                 # App source
-packages/
-  shared-types/          # Shared TypeScript contracts (builds .d.ts)
+    features/            # Feature-first UI + logic (co-located tests)
+    server/              # Server-only code (actions, data, services)
+    lib/                 # Framework-agnostic utilities
+    hooks/               # App-wide hooks
+    store/               # Zustand global client state
+    styles/              # Global Tailwind CSS and theme tokens
+    tests/               # Cross-cutting integration tests and fixtures
+      integration/       # Integration tests
+      e2e/               # Playwright end-to-end tests
+  packages/
+  shared-types/          # Shared TypeScript contracts (types-only)
+  query/                 # Runtime query helpers (query keys, config)
 services/                # Backend services (e.g., Vert.x, orchestration)
-styles/                  # Global Tailwind v4 setup and theme tokens
 docs/                    # Long‑form documentation and guides
 plans/                   # Plans and per‑plan research (see plans/README.md)
 .changeset/              # Changesets for versioning
@@ -57,7 +76,7 @@ plans/                   # Plans and per‑plan research (see plans/README.md)
 Notes:
 
 - Use `bun run --filter <pkg>` to scope tasks to a workspace; Bun filters the workspace, Turbo runs the task.
-- Many directories include local README.md files documenting conventions (example: `apps/web/stores/README.md`).
+- Many directories include local README.md files documenting conventions (example: `apps/web/store/README.md`).
 
 ## Contributing
 

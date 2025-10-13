@@ -1,4 +1,8 @@
 {
+  "scripts/**/*.js": [
+    "bunx eslint --fix --cache --config scripts/eslint.config.js",
+    "prettier --write"
+  ],
   "apps/**/*.{ts,tsx,js,jsx}": ["bunx eslint --fix --cache", "prettier --write"],
   "packages/**/*.{ts,tsx,js,jsx}": ["bunx eslint --fix --cache", "prettier --write"],
   "services/**/*.{ts,tsx,js,jsx}": ["bunx eslint --fix --cache", "prettier --write"],

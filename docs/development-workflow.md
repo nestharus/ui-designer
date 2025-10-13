@@ -19,6 +19,16 @@ bun run dev
 bun run dev --filter @ui-designer/package-name
 ```
 
+## Where to Put Code
+
+- Feature UI and logic: `apps/web/features/<feature>/`
+- Server-only code (actions, data, services): `apps/web/server/`
+- Framework-agnostic utilities: `apps/web/lib/`
+- App-wide hooks: `apps/web/hooks/`
+- Global client state (Zustand): `apps/web/store/`
+- Global styles: `apps/web/styles/`
+- Integration tests and fixtures: `apps/web/tests/`
+
 ### Building
 
 ```bash
@@ -62,18 +72,27 @@ Authoring and logging:
 ### Testing
 
 ```bash
-# Run all tests once
-bun run test
+# Unit tests
+bun run test:unit
+bun run test:unit:watch
 
-# Run tests in watch mode
-bun run test:watch
+# Integration tests
+bun run test:integration
+bun run test:integration:watch
 
-# Run tests with coverage
-bun run test:coverage
+# All tests and coverage
+bun run test:all
+bun run test:coverage:all
 
 # Run tests for a specific package
 bun run --filter @ui-designer/package-name test
 ```
+
+Recommended flow:
+
+- During development: `bun run test:unit:watch`
+- Before commit: `bun run test:integration`
+- Before push/PR: `bun run test:all` and `bun run test:e2e`
 
 ## Code Quality Checks
 

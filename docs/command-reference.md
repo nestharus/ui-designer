@@ -113,15 +113,37 @@ bun run build --filter @ui-designer/app-name...
 ### Testing
 
 ```bash
-# All packages
-bun run test
+# Unit tests
+bun run test:unit
+bun run test:unit:watch
+
+# Integration tests
+bun run test:integration
+bun run test:integration:watch
+
+# All tests
+bun run test:all
+
+# Coverage
+bun run test:coverage:unit
+bun run test:coverage:integration
+bun run test:coverage:all
 
 # Specific package
 bun run test --filter @ui-designer/shared-types
-
-# Watch mode (specific package)
-bun run test:watch --filter @ui-designer/shared-types
 ```
+
+## Codemods
+
+```bash
+# Convert expect(...) to expect.soft(...) across tests
+bun run codemod:expect-soft
+```
+
+- Converts `expect(...)` to `expect.soft(...)` and preserves `await` for Playwright patterns.
+- Applies to unit, integration, and E2E tests via the configured globs.
+- After running, manually review Playwright tests to ensure all `await expect.soft(locator)` calls include a matcher, and plain value assertions do not `await` the sync matcher.
+- See `docs/testing-guide.md` for detailed guidance on soft assertions and async patterns.
 
 ### Cleaning
 

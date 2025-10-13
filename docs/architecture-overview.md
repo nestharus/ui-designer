@@ -184,28 +184,38 @@ apps/web/
 │   ├── layout.tsx         # Root layout (Server Component)
 │   ├── page.tsx           # Home page (Server Component)
 │   ├── providers.tsx      # Client providers (TanStack Query)
-│   ├── emotion-registry.tsx # Emotion setup
-│   └── actions.ts         # Server Actions
-├── components/            # React components
-│   ├── ui/               # shadcn components
-│   └── ...               # Custom components
-├── stores/               # Zustand stores
-│   ├── ui.ts            # UI state
-│   ├── auth.ts          # Auth UI state
-│   └── README.md        # Store documentation
-├── lib/                 # Utilities
-│   └── query-client.ts  # TanStack Query client
-└── styles/              # Global styles
-    └── globals.css      # Tailwind + custom CSS
+│   └── emotion-registry.tsx # Emotion setup
+├── features/              # Feature-first UI and logic (UI co-located per feature)
+│   └── home/              # Home feature (page, components, tests)
+├── store/                 # Zustand stores (global client state)
+│   ├── ui.ts              # UI state
+│   ├── auth.ts            # Auth UI state
+│   └── README.md          # Store documentation
+├── lib/                   # Framework-agnostic utilities
+│   ├── query-client.ts    # TanStack Query client
+│   └── highlight.ts       # Syntax highlighting utils
+├── hooks/                 # App-wide reusable hooks
+├── server/                # Server-only code (actions, data, services)
+│   ├── actions/           # Server Actions live here (not under app/)
+│   ├── data/
+│   └── services/
+├── styles/                # Global styles
+│   └── globals.css        # Tailwind + custom CSS
+└── tests/                 # Cross-cutting integration tests and fixtures
+    ├── integration/
+    └── fixtures/
 
-docs/                    # Documentation
-├── state-management-guide.md  # State management patterns
-├── styling-guide.md          # Styling patterns
-└── architecture-overview.md  # This file
+docs/                      # Documentation
+├── state-management-guide.md   # State management patterns
+├── styling-guide.md           # Styling patterns
+└── architecture-overview.md   # This file
 
 packages/
-└── shared-types/        # Shared TypeScript types
+├── shared-types/          # Shared TypeScript types (types-only)
+└── query/                 # Runtime query helpers (query keys, config)
 ```
+
+Note: Avoid a monolithic `components/` folder. Prefer feature-first organization under `features/` so UI, hooks, and tests for a feature live together.
 
 ## Key Principles
 

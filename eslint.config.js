@@ -33,7 +33,6 @@ export default tseslint.config(
     plugins: {
       '@typescript-eslint': tseslint.plugin,
       unicorn: unicornPlugin,
-      drizzle: drizzlePlugin,
     },
     rules: {
       // TypeScript rules (XO-inspired strictness)
@@ -165,6 +164,7 @@ export default tseslint.config(
       'prefer-spread': 'error',
     },
   },
+
   {
     // React-specific rules only for React files
     files: ['apps/**/*.{tsx,jsx}', '**/*.{tsx,jsx}'],
@@ -254,23 +254,84 @@ export default tseslint.config(
       'drizzle/enforce-update-with-where': 'error',
     },
   },
-  {
-    // SonarJS rules for code quality and code smells
-    files: ['**/*.{ts,tsx}'],
-    plugins: {
-      sonarjs: sonarPlugin,
-    },
-    rules: {
-      ...sonarPlugin.configs.recommended.rules,
-    },
-  },
+  sonarPlugin.configs.recommended,
   // Prettier config (must be last to override formatting rules)
   ...(Array.isArray(prettierConfig) ? prettierConfig : [prettierConfig]),
+  {
+    // Plain JS utilities/scripts: disable TypeScript-specific rules
+    files: ['scripts/**/*.js'],
+    rules: {
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/consistent-type-exports': 'off',
+      '@typescript-eslint/consistent-type-imports': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
+  },
+  {
+    // Test files override: relax strict unsafe rules and import order constraints needed for mocks
+    files: [
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
+      '**/__tests__/**/*.{ts,tsx}',
+    ],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'sonarjs/no-unused-vars': 'off',
+      'import/first': 'off',
+      // Prefer soft assertions in tests across Vitest and Playwright
+      // See docs/testing-guide.md for patterns and async matcher guidance.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'CallExpression[callee.name="expect"]:not(:has(MemberExpression[property.name=/^(assertions|hasAssertions)$/]))',
+          message:
+            'Use expect.soft(...) instead of expect(...). See docs/testing-guide.md for guidance.',
+        },
+        // Playwright anti-pattern: awaiting the wrapper without a matcher
+        // Disallow: await expect.soft(locator)
+        // Prefer: await expect.soft(locator).toBeVisible() or const v = await fn(); expect.soft(v).toBe(...)
+        {
+          selector:
+            'AwaitExpression > CallExpression[callee.object.name="expect"][callee.property.name="soft"]',
+          message:
+            'Do not await expect.soft(...) without a matcher. Use: await expect.soft(locator).toBeVisible() or const value = await fn(); expect.soft(value).toBe(...)',
+        },
+        // Playwright anti-pattern: calling the wrapper without a matcher
+        // Disallow: expect.soft(locator);
+        // Prefer: await expect.soft(locator).toBeVisible() or const v = await fn(); expect.soft(v).toBe(...)
+        {
+          selector:
+            'ExpressionStatement > CallExpression[callee.object.name="expect"][callee.property.name="soft"]',
+          message:
+            'Do not call expect.soft(...) without a matcher. Use await expect.soft(locator).toBeVisible() or await fn(); expect.soft(value).toBe(...)',
+        },
+      ],
+    },
+  },
   {
     ignores: [
       '**/node_modules/**',
       '**/dist/**',
       '**/build/**',
+      '**/coverage/**',
       '**/.next/**',
       '.bun-cache/',
       '.vscode/',

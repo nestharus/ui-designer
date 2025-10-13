@@ -18,6 +18,8 @@ tsconfig.tsbuildinfo
 
 # Testing
 coverage/
+playwright-report/
+test-results/
 .scannerwork/
 *.tsbuildinfo
 

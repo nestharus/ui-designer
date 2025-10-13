@@ -17,7 +17,7 @@ This document explains the execution flow when you run workspace-filtered comman
 │ Step 1: Bun Workspace Filtering                                 │
 │ ─────────────────────────────────────────────────────────────── │
 │ • Bun reads workspaces from package.json                        │
-│ • Filters to: @ui-designer/shared-types                         │
+│ • Captures --filter flag: @ui-designer/shared-types              │
 │ • Sets working directory context                                │
 └────────────────────────────┬────────────────────────────────────┘
                              │
@@ -27,15 +27,16 @@ This document explains the execution flow when you run workspace-filtered comman
 │ ─────────────────────────────────────────────────────────────── │
 │ • Bun looks up "dev" in root package.json                       │
 │ • Finds: "dev": "turbo run dev"                                 │
+│ • Prepares to forward --filter to Turbo (Bun does not enforce)   │
 └────────────────────────────┬────────────────────────────────────┘
                              │
                              ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │ Step 3: Execute Turbo (via node_modules/.bin/)                  │
 │ ─────────────────────────────────────────────────────────────── │
-│ • Bun executes: turbo run dev                                   │
-│ • Turbo runs in the filtered workspace context                  │
-│ • Turbo applies its caching and task orchestration              │
+│ • Bun executes: turbo run dev --filter @ui-designer/shared-types │
+│ • Turbo receives and enforces the filter scope                   │
+│ • Turbo applies caching and task orchestration                   │
 └────────────────────────────┬────────────────────────────────────┘
                              │
                              ▼
@@ -58,23 +59,24 @@ From `AGENTS.md`:
 This means:
 
 - ✅ All commands start with `bun run`
-- ✅ Bun manages workspace filtering
+- ✅ Bun forwards flags and runs Turbo; Turbo enforces filtering
 - ✅ Turbo is invoked internally, not directly
 
 ### 2. Separation of Concerns
 
 ```text
-┌──────────────┐         ┌──────────────┐
-│     Bun      │         │    Turbo     │
-│              │         │              │
-│  Workspace   │────────▶│   Caching    │
-│  Filtering   │         │   Pipeline   │
-│              │         │   Execution  │
-└──────────────┘         └──────────────┘
+┌──────────────┐         ┌─────────────────────────────┐
+│     Bun      │         │            Turbo            │
+│              │         │                             │
+│  Flag        │────────▶│  Filtering, caching,        │
+│  forwarding  │         │  dependency graph, pipeline │
+│  + script    │         │  execution                  │
+│  execution   │         │                             │
+└──────────────┘         └─────────────────────────────┘
 ```
 
-- **Bun** handles: Workspace management, filtering, script execution
-- **Turbo** handles: Task caching, dependency graphs, parallel execution
+- **Bun** handles: Workspace management, flag forwarding, script execution
+- **Turbo** handles: Filtering, task caching, dependency graphs, parallel execution
 
 ### 3. No Global Turbo CLI
 

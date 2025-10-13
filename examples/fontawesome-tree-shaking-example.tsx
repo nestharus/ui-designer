@@ -44,6 +44,7 @@ export function SocialLinks() {
         href="https://github.com"
         className="text-gray-700 transition-colors hover:text-gray-900"
         aria-label="GitHub"
+        rel="noopener noreferrer"
       >
         <FontAwesomeIcon icon={faGithub} size="2x" />
       </a>
@@ -52,6 +53,7 @@ export function SocialLinks() {
         href="https://linkedin.com"
         className="text-blue-600 transition-colors hover:text-blue-700"
         aria-label="LinkedIn"
+        rel="noopener noreferrer"
       >
         <FontAwesomeIcon icon={faLinkedin} size="2x" />
       </a>

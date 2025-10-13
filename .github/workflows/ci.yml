@@ -28,7 +28,8 @@ jobs:
       - name: Type check
         run: bun run type-check
 
-  test:
+  test-unit:
+    # Unit tests: co-located tests for features, lib, hooks, store, server
     name: Unit Tests
     runs-on: ubuntu-latest
     env:
@@ -43,17 +44,19 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Run tests
-        run: bun run test:coverage
+      - name: Run unit tests with coverage
+        run: bun run test:coverage:unit
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         if: always()
         with:
           files: '**/coverage/lcov.info'
+          flags: unit-coverage
 
-  e2e:
-    name: E2E Tests
+  test-integration:
+    # Integration tests: cross-cutting tests in apps/web/tests/integration
+    name: Integration Tests
     runs-on: ubuntu-latest
     env:
       FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
@@ -67,19 +70,97 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Install Playwright browsers
+      - name: Run integration tests with coverage
+        run: bun run test:coverage:integration
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: '**/coverage/lcov.info'
+          flags: integration-coverage
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    # Safety net to catch hung tests; adjust if legitimate runs need more time.
+    # If average E2E runtime grows beyond ~8 minutes, consider increasing to 15 minutes.
+    timeout-minutes: 10
+    env:
+      CI: true
+      # Cache location for Playwright browsers
+      PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+      FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.0
+
+      # Cache Bun's download/cache to speed up installs
+      - name: Cache Bun cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            **/.turbo
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      # Cache Playwright browsers (large but stable across runs)
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-pw-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pw-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browsers and system deps
         run: bun run playwright:install
 
       - name: Run E2E tests
         run: bun run test:e2e
 
-      - name: Upload Playwright report
+      - name: Upload Playwright HTML report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      - name: Upload Playwright JSON results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results-json
+          path: playwright-report/results.json
+          retention-days: 30
+
+      - name: Publish summary for LLM consumption
+        if: always()
+        shell: bash
+        run: |
+          FILE="playwright-report/results.json"
+          if [ -f "$FILE" ]; then
+            {
+              echo "### Playwright JSON Results"
+              echo
+              echo '```json'
+              cat "$FILE"
+              echo
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No results.json found in playwright-report/." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   build:
     name: Build

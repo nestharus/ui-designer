@@ -11,16 +11,17 @@ export default defineConfig({
   test: {
     ...baseConfig.test,
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    passWithNoTests: true,
     setupFiles: [join(rootDir, 'test/setup.ts')],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       thresholds: {
-        branches: 80,
-        functions: 80,
-        lines: 80,
-        statements: 80,
-        perFile: false,
+        branches: 100,
+        functions: 100,
+        lines: 100,
+        statements: 100,
+        perFile: true,
       },
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
@@ -28,6 +29,10 @@ export default defineConfig({
         'src/**/*.spec.{ts,tsx}',
         '**/*.d.ts',
         'src/query-config.register.ts',
+        'src/index.ts',
+        'src/api.ts',
+        'src/domain.ts',
+        'src/query-config.ts',
       ],
     },
   },

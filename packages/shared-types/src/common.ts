@@ -1,5 +1,3 @@
-import { StatusCodes } from 'http-status-codes';
-
 export type Nullable<T> = T | null | undefined;
 
 type Primitive = string | number | boolean | bigint | symbol | null | undefined;
@@ -49,10 +47,6 @@ export type DeepPartial<T> = T extends Primitive
                   : T extends object
                     ? { [K in keyof T]?: DeepPartial<T[K]> }
                     : T;
-
-export const HttpStatus = StatusCodes;
-
-export type HttpStatusCode = (typeof HttpStatus)[keyof typeof HttpStatus];
 
 export enum ErrorCode {
   VALIDATION_FAILED = 'VALIDATION_FAILED',

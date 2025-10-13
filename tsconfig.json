@@ -8,11 +8,15 @@
   "files": [
     "vitest.config.ts",
     "packages/shared-types/vitest.config.ts",
+    "packages/query/vitest.config.ts",
     "apps/web/vitest.config.ts"
   ],
   "references": [
     {
       "path": "./packages/shared-types"
+    },
+    {
+      "path": "./packages/query"
     },
     {
       "path": "./apps/web"
