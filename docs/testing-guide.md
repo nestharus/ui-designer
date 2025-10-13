@@ -190,6 +190,19 @@ Note: `await expect.soft(...)` alone does not hang; it simply resolves without r
 
 See `docs/e2e-testing-guide.md` for more Playwright‑specific patterns.
 
+## Integration Tests
+
+Integration tests validate cross-cutting scenarios spanning multiple features, modules, or layers.
+
+- Categories: client-side (UI + providers + routing + React Query), server-side (route handlers + service layer + server actions + DB), middleware (Next.js middleware for auth/intl/feature flags).
+- Directory structure: `apps/web/tests/integration/client/`, `apps/web/tests/integration/server/`, `apps/web/tests/integration/middleware/`.
+- Tools: Vitest, `@testing-library/react`, MSW, and optionally Testcontainers or in-memory DB.
+- Naming: `*.int.test.ts[x]`.
+- Speed target: < 200ms per test.
+- Coverage target: 70% (slightly lower than unit tests at 80%).
+
+See `apps/web/tests/integration/README.md` for examples and patterns.
+
 ### Automated Migration
 
 The codemod converts `expect(...)` to `expect.soft(...)` and preserves `await` when present (e.g., `await expect(...)` becomes `await expect.soft(...)`). It handles both Vitest (sync) and Playwright (async) patterns.
@@ -722,6 +735,6 @@ it('should transform user data correctly', () => {
 ### Test Placement Strategy
 
 - Co-locate unit tests under `__tests__/` next to the code they cover (e.g., `features/<name>/__tests__`, `lib/__tests__`).
-- Put cross-cutting integration tests under `apps/web/tests/integration/` and shared fixtures under `apps/web/tests/fixtures/`.
+- Integration tests live in `apps/web/tests/integration/` organized by category (`client/`, `server/`, `middleware/`). Shared fixtures live under `apps/web/tests/fixtures/`.
 - Keep E2E tests under `apps/web/tests/e2e/`.
 - `packages/shared-types` participates in coverage with 80% thresholds (it contains runtime code validated by tests).

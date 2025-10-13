@@ -16,15 +16,20 @@ describe('HomePage', () => {
   });
 
   it('renders Font Awesome icons', () => {
-    render(<HomePage />);
+    const { container } = render(<HomePage />);
     // Rocket
-    expect.soft(document.querySelector('svg[data-icon="rocket"]')).toBeTruthy();
+    const rocketIcon = container.querySelector('svg[data-icon="rocket"]');
+    expect.soft(rocketIcon).toBeInTheDocument();
+    expect.soft(rocketIcon).toBeVisible();
     // Coffee or mug-saucer (rename in FA v6+)
-    const coffeeOrMug = document.querySelector(
+    const coffeeOrMugIcon = container.querySelector(
       'svg[data-icon="coffee"], svg[data-icon="mug-saucer"]',
     );
-    expect.soft(coffeeOrMug).toBeTruthy();
+    expect.soft(coffeeOrMugIcon).toBeInTheDocument();
+    expect.soft(coffeeOrMugIcon).toBeVisible();
     // GitHub
-    expect.soft(document.querySelector('svg[data-icon="github"]')).toBeTruthy();
+    const githubIcon = container.querySelector('svg[data-icon="github"]');
+    expect.soft(githubIcon).toBeInTheDocument();
+    expect.soft(githubIcon).toBeVisible();
   });
 });

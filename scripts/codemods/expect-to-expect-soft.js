@@ -12,13 +12,15 @@
  * - Only targets test files via the CLI globs in package.json.
  * - Skips Bun shim test (test/vitest-shim.test.ts).
  */
+import { basename } from 'node:path';
+
 export default function transformer(file, api) {
   const j = api.jscodeshift;
   const source = file.source;
   const filePath = file.path || '';
 
-  // Skip Bun shim test
-  if (filePath.includes('test/vitest-shim.test.ts')) {
+  // Skip Bun shim test by precise filename match, regardless of path
+  if (basename(filePath) === 'vitest-shim.test.ts') {
     return source;
   }
 

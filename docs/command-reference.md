@@ -113,18 +113,18 @@ bun run build --filter @ui-designer/app-name...
 ### Testing
 
 ```bash
-# Unit tests
+# Unit tests — co-located with source; fast feedback on individual modules
 bun run test:unit
 bun run test:unit:watch
 
-# Integration tests
+# Integration tests — in `tests/integration/`; validate cross-cutting scenarios across features/layers
 bun run test:integration
 bun run test:integration:watch
 
-# All tests
+# All tests — runs both unit and integration
 bun run test:all
 
-# Coverage
+# Coverage — unit, integration, or both
 bun run test:coverage:unit
 bun run test:coverage:integration
 bun run test:coverage:all

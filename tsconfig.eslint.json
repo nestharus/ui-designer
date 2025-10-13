@@ -2,6 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "paths": {
+      "@/*": ["./apps/web/*"],
       "@ui-designer/shared-types": ["./packages/shared-types/src/index.ts"]
     }
   },

@@ -1,6 +1,7 @@
-import { expect, afterEach, vi } from 'vitest';
+import { expect, afterEach, afterAll, beforeAll, vi } from 'vitest';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import { cleanup } from '@testing-library/react';
+import { server } from '@/tests/fixtures/msw/node';
 
 // Add jest-dom matchers to Vitest's expect
 expect.extend(matchers);
@@ -8,7 +9,13 @@ expect.extend(matchers);
 // Cleanup after each test
 afterEach(() => {
   cleanup();
+  // Reset MSW handlers to test defaults between tests
+  server.resetHandlers();
 });
+
+// Start/stop MSW server for integration tests
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterAll(() => server.close());
 
 // Mock Next.js router and helpers used in components
 vi.mock('next/navigation', () => ({

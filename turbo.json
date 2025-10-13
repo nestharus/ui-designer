@@ -23,31 +23,31 @@
       "outputs": ["**/*.tsbuildinfo"]
     },
     "test": {
-      "cache": false,
+      "cache": true,
       "outputs": ["coverage/**"]
     },
     "test:unit": {
-      "cache": false,
+      "cache": true,
       "outputs": ["coverage/**"]
     },
     "test:integration": {
-      "cache": false,
+      "cache": true,
       "outputs": ["coverage/**"]
     },
     "test:all": {
-      "cache": false,
+      "cache": true,
       "outputs": ["coverage/**"]
     },
     "test:coverage:unit": {
-      "cache": false,
+      "cache": true,
       "outputs": ["coverage/**"]
     },
     "test:coverage:integration": {
-      "cache": false,
+      "cache": true,
       "outputs": ["coverage/**"]
     },
     "test:coverage:all": {
-      "cache": false,
+      "cache": true,
       "outputs": ["coverage/**"]
     },
     "test:e2e": {

@@ -1,5 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
+  "compilerOptions": {},
   // Vitest configs are included here to ensure they're type-checked as part of the
   // project solution. This provides IDE support (especially IntelliJ IDEA) and catches
   // config errors early. The configs use import.meta which requires "module": "esnext"
@@ -20,6 +21,9 @@
     },
     {
       "path": "./apps/web"
+    },
+    {
+      "path": "./apps/web/tests"
     }
   ],
   "exclude": ["**/dist", "**/.next", "**/.turbo"]

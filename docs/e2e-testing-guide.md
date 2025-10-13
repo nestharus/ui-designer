@@ -330,6 +330,8 @@ test('icons visible after hydration', async ({ page }) => {
 });
 ```
 
+Common causes of delayed DOM during SSR hydration include: third-party libraries that inject DOM (e.g., Font Awesome, charting libraries), client components that initialize in useEffect, and dynamic imports that load after initial render. These are why an explicit hydration marker is preferable to hardcoded timeouts—it provides a reliable signal that the app is ready for interaction.
+
 Note: `page.waitForLoadState('networkidle')` can be used with caution if hydration completion correlates with network idleness in your app. However, explicit markers are faster and more reliable.
 
 This approach relies on Playwright's web-first assertions (auto-retry) and avoids brittle, hardcoded timeouts. It's especially important for client components and third-party libraries that inject DOM during hydration.

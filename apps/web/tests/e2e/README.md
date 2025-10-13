@@ -26,6 +26,7 @@ Due to WSL networking complexities, you must start the dev server manually:
    ```
 
 2. **Run the E2E tests** in another terminal:
+
    ```bash
    bun run test:e2e
    ```

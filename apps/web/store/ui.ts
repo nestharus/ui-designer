@@ -22,6 +22,7 @@ function getStorage(): Storage | null {
   return null;
 }
 
+// Returns true by default when localStorage key is absent, matching INITIAL_SIDEBAR_OPEN
 function readSidebarOpen(): boolean {
   const storage = getStorage();
   const raw = storage?.getItem('sidebarOpen');
@@ -52,6 +53,7 @@ export const useUIStore = create<UIState>((set) => ({
   },
 }));
 
+// Note: Consider migrating to Zustand's persist middleware with skipHydration for simpler SSR rehydration
 // Client-only rehydration to avoid SSR/client hydration mismatches.
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, sonarjs/different-types-comparison -- Direct comparison required for SSR safety
 if (globalThis.window !== undefined) {
